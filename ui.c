@@ -5,11 +5,6 @@
 
 #include "stag.h"
 
-
-
-unsigned int all_equal_int(unsigned int (*)(const TagLib_Tag *));
-char *all_equal_str(char *(*)(const TagLib_Tag *));
-
 /* 
  * This is fucking retarded but is useful.
  */

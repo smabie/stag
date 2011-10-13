@@ -15,10 +15,6 @@
 		set_##t (ENTRY(file_menu), s);	\
 	} while (0)					
 
-char *str_cleanup(char *);
-const char *make_regex_str(TagLib_Tag *);
-void resize(int);
-
 WINDOW *dir_win, *file_win, *info_win, *edit_win;
 int resizep = 0;
 

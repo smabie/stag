@@ -105,6 +105,12 @@ size_t strlcat(char *, const char *, size_t);
 size_t strlcpy(char *, const char *, size_t);
 #endif	/* __GLIC__ */
 
+unsigned int all_equal_int(unsigned int (*)(const TagLib_Tag *));
+char *all_equal_str(char *(*)(const TagLib_Tag *));
+char *str_cleanup(char *);
+const char *make_regex_str(TagLib_Tag *);
+void resize(int);
+
 ITEM **path_make_items(const char *, int);
 ITEM **list_make_items(void);
 ITEM **info_make_items(const struct entry *, int);
