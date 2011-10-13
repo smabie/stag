@@ -1,0 +1,19 @@
+stag is a C curses based mp3/ogg/flac tagging application. 
+
+Features:
+    * Support for MP3, OGG, and FLAC files
+    * Support for simultaneous file editing
+    * File selection by regex
+    * Very low memory footprint (~2MB unless editing many files)
+    * Uses the very fast Taglib library
+    * Intuitive curses interface
+    * Released into the public domain 
+
+Dependencies:
+    * ncurses (probably included with your distribution)
+    * taglib (sometimes called libtag) 
+
+Check out INSTALL for installation instructions. Check out the man
+page for usage info.
+
+stag was written by Sturm Mabie (sturm@cryptm.org).

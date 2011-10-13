@@ -1,0 +1,214 @@
+.\"
+.\" This file is public domain as declared by Sturm Mabie.
+.\" 
+.Dd $Mdocdate$
+.Dt STAG 1
+.Os
+.Sh NAME
+.Nm stag
+.Nd curses based audio file tagger
+.Sh SYNOPSIS
+.Nm stag
+.Ar [directory ...]
+.Sh DESCRIPTION
+.Nm
+is a curses based audio tagger that supports MP3, OGG, and FLAC audio files. The
+user interface of
+.Nm
+is split into four seperate panels, corresponding to four unique modes, each
+with their own set of commands: 
+.Em directory-mode ,
+.Em file-mode ,
+.Em info-mode ,
+and
+.Em edit-mode .
+There are a few other terms this man page uses that should be defined in order to
+avoid ambiguity:
+.Em active-buffer ,
+a list of files that can be edited with tag editing commands; 
+.Em mark ,
+the currently highlighted element;
+.Em selected
+files, a list of files that are a subset of the 
+.Em active-buffer
+that some commands uniquely address. While most keybindings are local to the
+current mode, a few keybindings are available with nearly identical semantics in
+.Em directory-mode ,
+.Em file-mode ,
+and
+.Em info-mode :
+.Bl -tag -width xxxxxxxxx
+.It n
+Move the 
+.Em mark
+down one entry.
+.It C-n | PGDN
+Move the
+.Em mark
+down by one page of entries. In
+.Em info-mode ,
+this does nothing.
+.It p | UP
+Move the
+.Em mark
+up one entry.
+.It C-p | PGUP
+Move the
+.Em mark
+up by one page of entries. In
+.Em info-mode ,
+this does nothing.
+.It q
+Exit
+.Nm .
+.Sh DIRECTORY-MODE
+Associated with the left-most panel of the curses interface of
+.Nm ,
+.Em directory-mode
+displays a list of directories in the current directory. One then navigates
+across the filesystem, adding the desired directories to the
+.Em active-buffer .
+.Pp
+The following is the list of keybindings available in
+.Em directory-mode
+and their corresponding actions:
+.Bl -tag -width xxxxxxxxx
+.It RET   
+Enter the directory under the 
+.Em mark .
+This then displays the children directories of the directory under the
+.Em mark
+in the directory panel.
+.It SPC
+Recursively add the directories and files to the
+.Em active-buffer
+that are children to the directory under the
+.Em mark .
+.It h
+Toggle whether hidden directories are displayed in the directory panel.
+.It o | RIGHT
+Switch focus to the file panel, thus entering 
+.Em file-mode .
+.Sh FILE-MODE
+Associated with the right-most panel of the curses interface of
+.Nm ,
+.Em file-mode
+displays the contents of the
+.Em active-buffer :
+a list of audio files who's tags can be edited with a variety of commands. 
+.Pp
+The following is a list of keybindings and their associated action that are
+available in
+.Em file-mode :
+.Bl -tag -width xxxxxxxxx
+.It RET
+Edit the file under the
+.Em mark ,
+thus switching to
+.Em info-mode .
+.It SPC
+Toggles the selection status of the file under the
+.Em mark . 
+Therefore transforming a 
+.Em selected
+file into a unselected file and vice versa.
+.It /
+Prompts the user for an ERE (re_format(7)) and toggles the selection status of
+all files that have tags that match the ERE. The tags are compiled into one
+string of the form ``track: %d title: %s artist: %s album: %s genre: %s year: %d
+comment: %s'' for matching purposes.
+.It a
+Toggle the selection status of all files in the
+.Em active-buffer .
+Consequently, when no files are selected and this key is pressed, all of the
+files in the
+.Em active-buffer 
+will be selected. Pressed again, all of the files will be deselected.
+.It c
+Clear the
+.Em active-buffer .
+.It d
+Remove the currently
+.Em selected
+files. 
+.It e
+Edit the currently
+.Em selected
+files, thus switching to
+.Em info-mode .
+.It o | LEFT
+switch focus to the directory panel, thus entering
+.Em directory-mode .
+.It r
+Reload the currently
+.Em selected
+files from disk, undoing all previous edit operations.
+.It s
+Write the file under the
+.Em mark
+to the disk.
+.It u
+Convert all 
+.Em selected
+files in the 
+.Em active-buffer
+into normal files.
+.It w
+Write all 
+.Em selected
+files in the
+.Em active-buffer
+to the disk.
+.Sh INFO-MODE
+.Em info-mode
+is associated with the panel immediately below both the directory panel and the
+file panel. Normally this panel just displays the tag information of the file
+under the
+.Em mark .
+When in
+.Em info-mode
+one can choose a tag to edit. 
+.Pp
+The following is a list of keybindings and their
+respective actions available in
+.Em info-mode :
+.Bl -tag -width xxxxxxxxx
+.It LEFT
+Switch focus to the directory panel, thus entering
+.Em directory-mode .
+.It RET 
+Edit the tag under the
+.Em mark .
+This consequently switches the focus to the edit panel and enters
+.Em edit-mode .
+.It o
+Switch the focus  to the file panel, entering 
+.Em file-mode .
+.Sh EDIT-MODE
+.Em edit-mode
+is associated with the last line of the display. In this mode is where the
+actual editing of the tag is done. Emacs-style cursor movement bindings are used
+to help facilitate quick editing of tags in this mode.
+.Pp
+The following is a list of keybindings and their corresponding actions available in
+.Em edit-mode :
+.Bl -tag -width xxxxxxxxx
+.It BACKSPC 
+Delete character before cursor.
+.It RET
+Switch to
+.Em info-mode .
+.It C-a
+Jump to the beginning of the line.
+.It C-b | LEFT
+Move back one character.
+.It C-d
+Delete character under cursor.
+.It C-e
+Jump to the end of the line.
+.It C-f | RIGHT
+Move forward one character.
+.It C-k
+Delete from the cursor to the end of the line.
+.Sh AUTHORS
+This program was created by Sturm Mabie (sturm@cryptm.org).
