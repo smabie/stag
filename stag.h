@@ -5,7 +5,6 @@
 
 #include <sys/ioctl.h>
 #include <sys/param.h>
-#include <sys/queue.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -30,6 +29,12 @@
 #include <menu.h>
 
 #include <taglib/tag_c.h>
+
+/* 
+ * sys/queue from OpenBSD. We use our own because not all queue's are created
+ * equal.
+ */
+#include "queue.h"		
 
 #define SAFE(s) (strlen(s) != 0 ? (s) : " ")
 #define INT_SAFE(s) ((*s) != '0' ? (s) : " ")
@@ -83,27 +88,11 @@ struct entry {
 #define basename bsd_basename
 #define dirname bsd_dirname
 
-#if defined(QUEUE_MACRO_DEBUG) || (defined(_KERNEL) && defined(DIAGNOSTIC))
-#define _Q_INVALIDATE(a) (a) = ((void *)-1)
-#else
-#define _Q_INVALIDATE(a)
-#endif
-
-#define LIST_REPLACE(elm, elm2, field) do {                             \
-        if (((elm2)->field.le_next = (elm)->field.le_next) != NULL)     \
-                (elm2)->field.le_next->field.le_prev =                  \
-			&(elm2)->field.le_next;				\
-        (elm2)->field.le_prev = (elm)->field.le_prev;                   \
-	*(elm2)->field.le_prev = (elm2);                                \
-	_Q_INVALIDATE((elm)->field.le_prev);                            \
-	_Q_INVALIDATE((elm)->field.le_next);                            \
-	} while (0)
-
 char *bsd_basename(const char *);
 char *bsd_dirname(const char *);
 size_t strlcat(char *, const char *, size_t);
 size_t strlcpy(char *, const char *, size_t);
-#endif	/* __GLIC__ */
+#endif	/* __GLIBC__ */
 
 unsigned int all_equal_int(unsigned int (*)(const TagLib_Tag *));
 char *all_equal_str(char *(*)(const TagLib_Tag *));
