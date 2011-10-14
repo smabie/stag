@@ -40,7 +40,6 @@
 #define INT_SAFE(s) ((*s) != '0' ? (s) : " ")
 
 #define PROG_NAME	"stag"
-#define PROG_VERSION	"1.0"
 #define INFO_LEN 9		/* Height of the bottom info window. */
 
 /* 

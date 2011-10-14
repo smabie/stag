@@ -62,9 +62,8 @@ resize:
 
 	mvvline(1, COLS / 2, 0, LINES - INFO_LEN - 1);
 	mvhline(LINES - INFO_LEN, 0, 0, COLS);
-	mvprintw(0, (COLS - sizeof(PROG_NAME) - sizeof(PROG_VERSION)
-		     - strlen(hostname) - 13) / 2,
-		 "*** %s %s on %s ***", PROG_NAME, PROG_VERSION, hostname);
+	mvprintw(0, (COLS - sizeof(PROG_NAME) - strlen(hostname) - 12) / 2,
+		 "*** %s on %s ***", PROG_NAME, hostname);
 	mvprintw(LINES - INFO_LEN + 1, 0, "track:\t ");
 	mvprintw(LINES - INFO_LEN + 2, 0, "title:\t ");
 	mvprintw(LINES - INFO_LEN + 3, 0, "artist:\t ");
