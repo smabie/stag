@@ -175,6 +175,7 @@ resize:
 				       path_make_items(curdir, hidden));
 			free_item_strings(items);
 			free_items(items);
+			free(items);
 			post_menu(dir_menu);
 			break;
 		longer:
@@ -202,8 +203,10 @@ resize:
 			items = menu_items(file_menu);
 			set_menu_items(file_menu, list_make_items());
 
-			if (items != NULL)
+			if (items != NULL) {
 				free_items(items);
+				free(item);
+			}
 
 			post_menu(file_menu);
 
@@ -219,6 +222,7 @@ resize:
 						       hidden = !hidden));
 			free_item_strings(items);
 			free_items(items);
+			free(items);
 			post_menu(dir_menu);
 			break;
 		case KEY_DOWN:
@@ -285,8 +289,10 @@ resize:
 			clear_active();
 			set_menu_items(file_menu, NULL);
 
-			if (items != NULL)
+			if (items != NULL) {
 				free_items(items);
+				free(items);
+			}
 
 			post_menu(file_menu);
 			wrefresh(file_win);
@@ -299,8 +305,10 @@ resize:
 			remove_marked();
 			set_menu_items(file_menu, list_make_items());
 
-			if (items != NULL)
+			if (items != NULL) {
 				free_items(items);
+				free(items);
+			}
 
 			post_menu(file_menu);
 			wrefresh(file_win);

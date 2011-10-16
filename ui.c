@@ -210,10 +210,10 @@ info_make_items(const struct entry *p, int many)
 #define INT_MANY(f) (many ? all_equal_int(f) : f(p->tagp))
 	static char trackbuf[3];
 	static char yearbuf[5];
-	ITEM **ret;
+	static ITEM *ret[8];
 
-	if ((ret = calloc(8, sizeof(ITEM *))) == NULL)
-		err(1, "malloc");
+	/* if ((ret = calloc(8, sizeof(ITEM *))) == NULL) */
+	/* 	err(1, "calloc"); */
 	(void)snprintf(trackbuf, 3, "%d", INT_MANY(taglib_tag_track));
 	(void)snprintf(yearbuf, 5, "%d", INT_MANY(taglib_tag_year));
 
@@ -255,7 +255,6 @@ free_items(ITEM **items)
 
 	for (p = items; *p != NULL; p++)
 		free_item(*p);
-	free(items);
 }
 
 void
