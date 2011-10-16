@@ -212,8 +212,6 @@ info_make_items(const struct entry *p, int many)
 	static char yearbuf[5];
 	static ITEM *ret[8];
 
-	/* if ((ret = calloc(8, sizeof(ITEM *))) == NULL) */
-	/* 	err(1, "calloc"); */
 	(void)snprintf(trackbuf, 3, "%d", INT_MANY(taglib_tag_track));
 	(void)snprintf(yearbuf, 5, "%d", INT_MANY(taglib_tag_year));
 
