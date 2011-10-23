@@ -556,7 +556,7 @@ make_regex_str(TagLib_Tag *p)
 	static char buf[2048];	/* arbitrary */
 
 	(void)snprintf(buf, 2048, "track: %d title: %s artist: %s album: %s"
-		       "genre: %s year: %d comment: %s",
+		       " genre: %s year: %d comment: %s",
 		       taglib_tag_year(p),
 		       taglib_tag_title(p),
 		       taglib_tag_artist(p),
@@ -564,6 +564,8 @@ make_regex_str(TagLib_Tag *p)
 		       taglib_tag_genre(p),
 		       taglib_tag_year(p),
 		       taglib_tag_comment(p));
+	printf(buf);
+	fflush(stdout);
 	return buf;
 }
 
