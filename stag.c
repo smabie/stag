@@ -564,8 +564,6 @@ make_regex_str(TagLib_Tag *p)
 		       taglib_tag_genre(p),
 		       taglib_tag_year(p),
 		       taglib_tag_comment(p));
-	printf(buf);
-	fflush(stdout);
 	return buf;
 }
 
