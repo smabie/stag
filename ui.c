@@ -247,6 +247,18 @@ draw_info(const struct entry *p, WINDOW *win)
 }
 
 void
+nth_item(MENU *menu, int n)
+{
+	if (n > item_count(menu)) {
+		menu_driver(menu, REQ_LAST_ITEM);
+		return;
+	}
+	menu_driver(menu, REQ_FIRST_ITEM);
+	while (n-- > 0)
+		menu_driver(menu, REQ_DOWN_ITEM);
+}
+
+void
 free_items(ITEM **items)
 {
 	ITEM **p;

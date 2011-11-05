@@ -36,11 +36,11 @@ main(int argc, char **argv)
 	FORM *edit_form;
 	struct entry *p;
 	char curdir[PATH_MAX], hostname[MAXHOSTNAMELEN], *s;
-	int c, hidden, tmp, many, d, regexp;
+	int c, hidden, tmp, many, d, regexp, dir_idx, file_idx, info_idx, idx;
 	enum { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE } state;
 
 	(void)gethostname(hostname, MAXHOSTNAMELEN);
-	regexp = many = hidden = 0;
+	idx = dir_idx = file_idx = info_idx = regexp = many = hidden = 0;
 	state = DIR_MODE;
 	info_menu = NULL;
 	p = NULL;
@@ -54,6 +54,10 @@ main(int argc, char **argv)
 	for (d = 1; d < argc; d++)
 		if (populate_active(argv[d], AFLG_REC))
 			return 1;
+	/* 
+	 * This jump is awful and makes things initially difficult to reason
+	 * about.
+	 */
 resize:
 	initscr();
 	cbreak();
@@ -121,6 +125,15 @@ resize:
 	post_menu(file_menu);
  	post_menu(dir_menu);
 
+	nth_item(dir_menu, dir_idx);
+	nth_item(file_menu, file_idx);
+	if (state == INFO_MODE) {
+		set_menu_items(info_menu, 
+			       info_make_items(ENTRY(file_menu), 0));
+		post_menu(info_menu);		
+		nth_item(info_menu, info_idx);
+	}
+
 	refresh();
 	wrefresh(file_win);
 	wrefresh(dir_win);
@@ -131,6 +144,13 @@ resize:
 		if (c == 'q' && state != EDIT_MODE)
 			break;
 		if (resizep) {
+			dir_idx = item_index(current_item
+					     ((const MENU *)dir_menu));
+			file_idx = item_index(current_item
+					      ((const MENU *)file_menu));
+			info_idx = item_index(current_item
+					      ((const MENU *)info_menu));
+
 			resizep = 0;
 			ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 			resize_term(w.ws_row, w.ws_col);
@@ -274,13 +294,14 @@ resize:
 			menu_driver(file_menu, REQ_FIRST_ITEM);
 			break;
 		case 'a':	/* toggle all */
+			idx = item_index(current_item((const MENU *)file_menu));
 			menu_driver(file_menu, REQ_FIRST_ITEM);
 			for (d = 0; d < item_count(file_menu); d++, 
 				     menu_driver(file_menu, REQ_DOWN_ITEM)) {
 				ENTRY(file_menu)->mark = !ENTRY(file_menu)->mark;
 				menu_driver(file_menu, REQ_TOGGLE_ITEM);
 			}
-			menu_driver(file_menu, REQ_FIRST_ITEM);
+			nth_item(file_menu, idx);
 			break;
 		case 'c':	/* clear */
 			unpost_menu(file_menu);
@@ -301,6 +322,7 @@ resize:
 		case 'd':	/* remove selected from active list */
 			unpost_menu(file_menu);
 
+			idx = item_index(current_item((const MENU *)file_menu));
 			items = menu_items(file_menu);
 			remove_marked();
 			set_menu_items(file_menu, list_make_items());
@@ -311,6 +333,7 @@ resize:
 			}
 
 			post_menu(file_menu);
+			nth_item(file_menu, idx); /* Not a very good solution. */
 			wrefresh(file_win);
 			break;
 		case 'e':	/* multi edit */
@@ -380,6 +403,7 @@ resize:
 			wrefresh(info_win);
 			break;
 		case 'u':	/* unmark all */
+			idx = item_index(current_item((const MENU *)file_menu));
 			menu_driver(file_menu, REQ_FIRST_ITEM);
 			for (d = 0; d < item_count(file_menu); d++, 
 				     menu_driver(file_menu, REQ_DOWN_ITEM)) {
@@ -388,7 +412,7 @@ resize:
 					ENTRY(file_menu)->mark = 0;
 				}
 			}
-			menu_driver(file_menu, REQ_FIRST_ITEM);
+			nth_item(file_menu, idx);
 			break;
 		case 'w':	/* write marked */
 			write_marked();
@@ -452,7 +476,7 @@ resize:
 			if (regexp) {
 				regexp = 0;
 				state = FILE_MODE;
-				goto rjmp;
+				goto rjmp; /* ick */
 			}
 			/* 
 			 * This whole scheme is pretty fucking stupid and should
@@ -481,10 +505,14 @@ resize:
 				CHOOSE(comment, s);
 				break;
 			}
+			idx = item_index(current_item((const MENU *)info_menu));
+
 			unpost_menu(info_menu);
 			set_menu_items(info_menu,
 				       info_make_items(ENTRY(file_menu), many));
 			post_menu(info_menu);
+
+			nth_item(info_menu, idx);
 			wrefresh(edit_win);
 			state = INFO_MODE;
 			continue;

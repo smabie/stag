@@ -93,6 +93,7 @@ size_t strlcat(char *, const char *, size_t);
 size_t strlcpy(char *, const char *, size_t);
 #endif	/* __GLIBC__ */
 
+void nth_item(MENU *, int);
 unsigned int all_equal_int(unsigned int (*)(const TagLib_Tag *));
 char *all_equal_str(char *(*)(const TagLib_Tag *));
 char *str_cleanup(char *);
