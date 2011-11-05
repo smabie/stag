@@ -127,6 +127,7 @@ resize:
 
 	nth_item(dir_menu, dir_idx);
 	nth_item(file_menu, file_idx);
+
 	if (state == INFO_MODE) {
 		set_menu_items(info_menu, 
 			       info_make_items(ENTRY(file_menu), 0));
@@ -165,7 +166,7 @@ resize:
 			delwin(info_win);
 			delwin(edit_win);
 			endwin();
-
+			
 			goto resize;
 		}
 		if (state == DIR_MODE)
@@ -270,6 +271,14 @@ resize:
 
 		if (state == FILE_MODE)
 		switch (c) {
+		case 13:	/* LF: single edit */
+			set_menu_items(info_menu, 
+				       info_make_items(ENTRY(file_menu), 0));
+			post_menu(info_menu);
+
+			many = 0;
+			state = INFO_MODE;
+			continue;
 		case '/':	/* regex select */
 			regexp = 1;
 			post_form(edit_form);
@@ -309,7 +318,6 @@ resize:
 			items = menu_items(file_menu);
 			clear_active();
 			set_menu_items(file_menu, NULL);
-
 			if (items != NULL) {
 				free_items(items);
 				free(items);
@@ -326,7 +334,6 @@ resize:
 			items = menu_items(file_menu);
 			remove_marked();
 			set_menu_items(file_menu, list_make_items());
-
 			if (items != NULL) {
 				free_items(items);
 				free(items);
@@ -344,20 +351,10 @@ resize:
 			}
 			if (tmp)
 				break;
-
 			set_menu_items(info_menu,
 				       info_make_items(ENTRY(file_menu), 1));
 			post_menu(info_menu);
-			
 			many = 1;
-			state = INFO_MODE;
-			continue;
-		case 13:	/* LF: single edit */
-			set_menu_items(info_menu, 
-				       info_make_items(ENTRY(file_menu), 0));
-			post_menu(info_menu);
-
-			many = 0;
 			state = INFO_MODE;
 			continue;
 		case KEY_LEFT:	/* switch focus to directory list */
@@ -511,8 +508,8 @@ resize:
 			set_menu_items(info_menu,
 				       info_make_items(ENTRY(file_menu), many));
 			post_menu(info_menu);
-
 			nth_item(info_menu, idx);
+
 			wrefresh(edit_win);
 			state = INFO_MODE;
 			continue;
