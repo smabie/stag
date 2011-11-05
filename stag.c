@@ -480,27 +480,13 @@ resize:
 			 * probably be fixed to use function pointers.
 			 */
 			switch (item_index(current_item(info_menu))) {
-			case 0:
-				CHOOSE(track, atoi(s));
-				break;
-			case 1:
-				CHOOSE(title, s);
-				break;
-			case 2:
-				CHOOSE(artist, s);
-				break;
-			case 3:
-				CHOOSE(album, s);
-				break;
-			case 4:
-				CHOOSE(genre, s);
-				break;
-			case 5:
-				CHOOSE(year, atoi(s));
-				break;
-			case 6:
-				CHOOSE(comment, s);
-				break;
+			case 0:	CHOOSE(track, atoi(s));		break;
+			case 1:	CHOOSE(title, s);		break;
+			case 2:	CHOOSE(artist, s);		break;
+			case 3: CHOOSE(album, s);		break;
+			case 4:	CHOOSE(genre, s);		break;
+			case 5:	CHOOSE(year, atoi(s));		break;
+			case 6:	CHOOSE(comment, s);		break;
 			}
 			idx = item_index(current_item((const MENU *)info_menu));
 
