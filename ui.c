@@ -65,7 +65,7 @@ path_make_items(const char *path, int hidden)
 	first = 1;
 
 	if ((dirp = opendir(path)) == NULL) {
-		warn("opendir");
+		warn("opendir: %s", path);
 		return NULL;
 	}
 
