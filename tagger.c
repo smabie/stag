@@ -64,12 +64,12 @@ make_entry(const char *path)
 	if ((ret = malloc(sizeof(struct entry))) == NULL)
 		err(1, "malloc");
 	if ((tmp = dirname(path)) == NULL) {
-		warn("dirname");
+		warn("dirname: %s", path);
 		goto er;
 	}
 	(void)strlcpy(ret->dir, tmp, PATH_MAX);
 	if ((tmp = basename(path)) == NULL) {
-		warn("basename");
+		warn("basename: %s", path);
 		goto er;
 	}
 	(void)strlcpy(ret->name, tmp, NAME_MAX);
