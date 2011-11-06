@@ -57,7 +57,8 @@ path_make_items(const char *path, int hidden)
 	char *str;
 	size_t size;
 	int first;
-	int d, s;
+	int d;
+	size_t s;
 
 	ret = NULL;
 	size = d = 2;
@@ -71,9 +72,8 @@ path_make_items(const char *path, int hidden)
 again:
 	errno = 0;
 	while ((dp = readdir(dirp)) != NULL) {
-		if ((s = strlcpy(buf, path, PATH_MAX)) >= PATH_MAX) {
+		if ((s = strlcpy(buf, path, PATH_MAX)) >= PATH_MAX)
 			goto longer;
-		}
 		if (path[(s = strlen(path)) - 1] != '/') {
 			buf[s] = '/';
 			buf[s + 1] = '\0';
