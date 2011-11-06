@@ -78,9 +78,8 @@ again:
 			buf[s] = '/';
 			buf[s + 1] = '\0';
 		}
-		if (strlcat(buf, dp->d_name, PATH_MAX) >= PATH_MAX) {
+		if (strlcat(buf, dp->d_name, PATH_MAX) >= PATH_MAX)
 			goto longer;
-		}
 		if (stat(buf, &sb) == -1)  {
 			warn("stat: %s", buf);
 			goto er;
