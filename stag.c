@@ -329,7 +329,8 @@ resize:
 			continue;
 		case 'd':	/* remove selected from active list */
 			unpost_menu(file_menu);
-
+			
+			s = ENTRY(file_menu)->name;
 			idx = item_index(current_item((const MENU *)file_menu));
 			items = menu_items(file_menu);
 			remove_marked();
@@ -340,7 +341,13 @@ resize:
 			}
 
 			post_menu(file_menu);
-			nth_item(file_menu, idx); /* Not a very good solution. */
+			for (d = 0; d < item_count(file_menu) && 
+				     s != ENTRY(file_menu)->name; d++) {
+				menu_driver(file_menu, REQ_DOWN_ITEM);
+			}
+			/* The selected item was one of the items deleted. */
+			if (d == item_count(file_menu))
+				nth_item(file_menu, idx);
 			wrefresh(file_win);
 			break;
 		case 'e':	/* multi edit */
