@@ -29,7 +29,8 @@ struct h active = LIST_HEAD_INITIALIZER(active);
 int is_valid_extension(const char *s, unsigned int mode)
 {
 	int c, d;
- 	static char buf[NAME_MAX], *p;
+ 	static char buf[NAME_MAX];
+	char *p;
 
 	(void)strlcpy(buf, s, NAME_MAX);
 
