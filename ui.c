@@ -5,6 +5,9 @@
 
 #include "stag.h"
 
+#define SAFE(s) (strlen(s) != 0 ? (s) : " ")
+#define INT_SAFE(s) ((*s) != '0' ? (s) : " ")
+
 /* 
  * This is fucking retarded but is useful.
  */

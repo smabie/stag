@@ -36,9 +36,6 @@
  */
 #include "queue.h"		
 
-#define SAFE(s) (strlen(s) != 0 ? (s) : " ")
-#define INT_SAFE(s) ((*s) != '0' ? (s) : " ")
-
 #define PROG_NAME	"stag"
 #define INFO_LEN 9		/* Height of the bottom info window. */
 
