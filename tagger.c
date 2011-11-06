@@ -156,9 +156,8 @@ populate_active(const char *path, unsigned int mode)
 		    strcmp(dp->d_name, ".") == 0 || 
 		    strcmp(dp->d_name, "..") == 0)
 			continue;
-		if (strlcat(buf, dp->d_name, PATH_MAX) >= PATH_MAX) {
+		if (strlcat(buf, dp->d_name, PATH_MAX) >= PATH_MAX)
 			goto longer;
-		}
 		if (stat(buf, &sb) == -1)  {
 			warn("stat: %s", buf);
 			goto er;
