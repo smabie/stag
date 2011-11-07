@@ -6,7 +6,6 @@
 #include "stag.h"
 
 #define SAFE(s) (strlen(s) != 0 ? (s) : " ")
-#define INT_SAFE(s) ((*s) != '0' ? (s) : " ")
 
 /* 
  * This is fucking retarded but is useful.
@@ -217,12 +216,12 @@ info_make_items(const struct entry *p, int many)
 	(void)snprintf(trackbuf, 3, "%d", INT_MANY(taglib_tag_track));
 	(void)snprintf(yearbuf, 5, "%d", INT_MANY(taglib_tag_year));
 
-	ret[0] = new_item(INT_SAFE(trackbuf), wtfbuf);
+	ret[0] = new_item(trackbuf, wtfbuf);
 	ret[1] = new_item(SAFE(MANY(taglib_tag_title)), wtfbuf);
 	ret[2] = new_item(SAFE(MANY(taglib_tag_artist)), wtfbuf);
 	ret[3] = new_item(SAFE(MANY(taglib_tag_album)), wtfbuf);
 	ret[4] = new_item(SAFE(MANY(taglib_tag_genre)), wtfbuf);
-	ret[5] = new_item(INT_SAFE(yearbuf), wtfbuf);
+	ret[5] = new_item(yearbuf, wtfbuf);
 	ret[6] = new_item(SAFE(MANY(taglib_tag_comment)), wtfbuf);
 	ret[7] = NULL;
 
@@ -239,12 +238,12 @@ draw_info(const struct entry *p, WINDOW *win)
 	(void)snprintf(yearbuf, 5, "%d", taglib_tag_year(p->tagp));
 	(void)snprintf(trackbuf, 3, "%d", taglib_tag_track(p->tagp));
 
-	mvwprintw(win, 0, 0, "%c%s\n", S(), INT_SAFE(trackbuf));
+	mvwprintw(win, 0, 0, "%c%s\n", S(), trackbuf);
 	mvwprintw(win, 1, 0, "%c%s\n", S(), SAFE(taglib_tag_title(p->tagp)));
 	mvwprintw(win, 2, 0, "%c%s\n", S(), SAFE(taglib_tag_artist(p->tagp)));
 	mvwprintw(win, 3, 0, "%c%s\n", S(), SAFE(taglib_tag_album(p->tagp)));
 	mvwprintw(win, 4, 0, "%c%s\n", S(), SAFE(taglib_tag_genre(p->tagp)));
-	mvwprintw(win, 5, 0, "%c%s\n", S(), INT_SAFE(yearbuf));
+	mvwprintw(win, 5, 0, "%c%s\n", S(), yearbuf);
 	mvwprintw(win, 6, 0, "%c%s\n", S(), SAFE(taglib_tag_comment(p->tagp)));
 }
 
