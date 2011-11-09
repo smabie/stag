@@ -115,10 +115,13 @@ Therefore transforming a
 .Em selected
 file into a unselected file and vice versa.
 .It /
-Prompts the user for an ERE (re_format(7)) and toggles the selection status of
+Prompts the user for an ERE (see 
+.Xr re_format 7 )
+and toggles the selection status of
 all files that have tags that match the ERE. The tags are compiled into one
-string of the form ``track: %d title: %s artist: %s album: %s genre: %s year: %d
-comment: %s'' for matching purposes.
+string of the form 
+.Dq track: %d title: %s artist: %s album: %s genre: %s year: %d comment: %s
+for matching purposes.
 .It a
 Toggle the selection status of all files in the
 .Em active-buffer .
