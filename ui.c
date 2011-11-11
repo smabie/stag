@@ -93,7 +93,8 @@ again:
 			else {
 				if ((str = strdup(dp->d_name)) == NULL)
 					err(1, "strdup");
-				ret[d] = new_item(str, wtfbuf);
+				if ((ret[d] = new_item(str, wtfbuf)) == NULL)
+					err(1, "new_item");
 				set_item_userptr(ret[d++], NULL); 
 			}
 		}
@@ -113,8 +114,10 @@ again:
 		goto again;
 	}
 	(void)closedir(dirp);
-	ret[0] = new_item(".", wtfbuf);
-	ret[1] = new_item("..", wtfbuf);
+	if ((ret[0] = new_item(".", wtfbuf)) == NULL)
+		err(1, "new_item");
+	if ((ret[1] = new_item("..", wtfbuf)) == NULL)
+		err(1, "new_item");
 	item_sort(ret + 2, 0, size - 2);
 	return ret;
 longer:
