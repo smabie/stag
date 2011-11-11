@@ -153,7 +153,8 @@ list_make_items()
 	ret[size] = NULL;	
        
 	LIST_FOREACH(p, &active, entries) {
-		ret[d] = new_item(p->name, wtfbuf);
+		if ((ret[d] = new_item(p->name, wtfbuf)) == NULL)
+			err(1, "new_item");
 		set_item_userptr(ret[d++], p); 
 	}
 
@@ -219,13 +220,20 @@ info_make_items(const struct entry *p, int many)
 	(void)snprintf(trackbuf, 3, "%d", INT_MANY(taglib_tag_track));
 	(void)snprintf(yearbuf, 5, "%d", INT_MANY(taglib_tag_year));
 
-	ret[0] = new_item(trackbuf, wtfbuf);
-	ret[1] = new_item(SAFE(MANY(taglib_tag_title)), wtfbuf);
-	ret[2] = new_item(SAFE(MANY(taglib_tag_artist)), wtfbuf);
-	ret[3] = new_item(SAFE(MANY(taglib_tag_album)), wtfbuf);
-	ret[4] = new_item(SAFE(MANY(taglib_tag_genre)), wtfbuf);
-	ret[5] = new_item(yearbuf, wtfbuf);
-	ret[6] = new_item(SAFE(MANY(taglib_tag_comment)), wtfbuf);
+	if ((ret[0] = new_item(trackbuf, wtfbuf)) == NULL)
+		err(1, "new_item");
+	if ((ret[1] = new_item(SAFE(MANY(taglib_tag_title)), wtfbuf)) == NULL)
+		err(1, "new_item");
+	if ((ret[2] = new_item(SAFE(MANY(taglib_tag_artist)), wtfbuf)) == NULL)
+		err(1, "new_item");
+	if ((ret[3] = new_item(SAFE(MANY(taglib_tag_album)), wtfbuf)) == NULL)
+		err(1, "new_item");
+	if ((ret[4] = new_item(SAFE(MANY(taglib_tag_genre)), wtfbuf)) == NULL)
+		err(1, "new_item");
+	if ((ret[5] = new_item(yearbuf, wtfbuf)) == NULL)
+		err(1, "new_item");
+	if ((ret[6] = new_item(SAFE(MANY(taglib_tag_comment)), wtfbuf)) == NULL)
+		err(1, "new_item");
 	ret[7] = NULL;
 
 	return ret;
