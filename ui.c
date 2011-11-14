@@ -311,9 +311,8 @@ stag_warnx(const char *fmt, ...)
 	
 	va_start(ap, fmt);
 	mvprintw(LINES - 1, 0, "stag: ");
-	if (fmt != NULL) {
+	if (fmt != NULL)
 		vw_printw(stdscr, fmt, ap);
-	}
 	va_end(ap);
 	refresh();
 }
