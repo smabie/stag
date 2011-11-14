@@ -136,9 +136,9 @@ resize:
 	}
 
 	refresh();
+	wrefresh(info_win);
 	wrefresh(file_win);
 	wrefresh(dir_win);
-	wrefresh(info_win);
 
 	while ((c = wgetch(state == DIR_MODE ? dir_win :
 			   (state == FILE_MODE ? file_win : info_win))) != EOF) {
@@ -200,7 +200,7 @@ resize:
 			post_menu(dir_menu);
 			break;
 		longer:
-			warnx("PATH_MAX of %d violated", PATH_MAX);
+			stag_warnx("PATH_MAX of %d violated", PATH_MAX);
 			curdir[tmp] = '\0';
 			break;
   		case ' ':	/* add all mp3/flac/ogg files */
@@ -226,7 +226,7 @@ resize:
 
 			if (items != NULL) {
 				free_items(items);
-				free(item);
+				free(items);
 			}
 
 			post_menu(file_menu);
