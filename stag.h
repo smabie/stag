@@ -97,6 +97,9 @@ char *str_cleanup(char *);
 const char *make_regex_str(TagLib_Tag *);
 void resize(int);
 
+void stag_warnx(const char *, ...);
+void stag_warn(const char *, ...);
+
 ITEM **path_make_items(const char *, int);
 ITEM **list_make_items(void);
 ITEM **info_make_items(const struct entry *, int);

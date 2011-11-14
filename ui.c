@@ -64,7 +64,7 @@ path_make_items(const char *path, int hidden)
 	first = 1;
 
 	if ((dirp = opendir(path)) == NULL) {
-		warn("opendir: %s", path);
+		stag_warn("opendir: %s", path);
 		return NULL;
 	}
 
@@ -80,7 +80,7 @@ again:
 		if (strlcat(buf, dp->d_name, PATH_MAX) >= PATH_MAX)
 			goto longer;
 		if (stat(buf, &sb) == -1)  {
-			warn("stat: %s", buf);
+			stag_warn("stat: %s", buf);
 			goto er;
 		}
 		if ((S_ISDIR(sb.st_mode) || S_ISLNK(sb.st_mode)) &&
@@ -102,7 +102,7 @@ again:
 		buf[buf[s] == '/' ? s + 1 : s] = '\0';
 	}
 	if (errno) {
-		warn("readdir");
+		stag_warn("readdir");
 		goto er;
 	}
 	if (first) {
@@ -121,7 +121,7 @@ again:
 	item_sort(ret + 2, 0, size - 2);
 	return ret;
 longer:
-	warnx("PATH_MAX of %d violated", PATH_MAX);
+	stag_warnx("PATH_MAX of %d violated", PATH_MAX);
 er:
 	(void)closedir(dirp);
 	free_items(ret);
@@ -286,4 +286,34 @@ free_item_strings(ITEM **items)
 
 	for (p = items + 2; *p != NULL; p++)
 		free((char *)item_name(*p));
+}
+
+void
+stag_warn(const char *fmt, ...)
+{
+	va_list ap;
+	
+	va_start(ap, fmt);
+	mvprintw(LINES - 1, 0, "stag: ");
+	if (fmt != NULL) {
+		vw_printw(stdscr, fmt, ap);
+		printw(": ");
+	}
+	printw("%s\n", strerror(errno));
+	va_end(ap);
+	refresh();
+}
+
+void
+stag_warnx(const char *fmt, ...)
+{
+	va_list ap;
+	
+	va_start(ap, fmt);
+	mvprintw(LINES - 1, 0, "stag: ");
+	if (fmt != NULL) {
+		vw_printw(stdscr, fmt, ap);
+	}
+	va_end(ap);
+	refresh();
 }

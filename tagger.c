@@ -40,7 +40,7 @@ int is_valid_extension(const char *s, unsigned int mode)
 		return 0;
 	*p = '/';
 	if ((p = basename(buf)) == NULL) {
-		warn("basename of %s", buf);
+		stag_warn("basename of %s", buf);
 		return 0;
  	}
 	for (c = 8, d = 0; c <= AFLG_ASF; c <<= 1, d++) {
@@ -64,26 +64,26 @@ make_entry(const char *path)
 	if ((ret = malloc(sizeof(struct entry))) == NULL)
 		err(1, "malloc");
 	if ((tmp = dirname(path)) == NULL) {
-		warn("dirname: %s", path);
+		stag_warn("dirname: %s", path);
 		goto er;
 	}
 	(void)strlcpy(ret->dir, tmp, PATH_MAX);
 	if ((tmp = basename(path)) == NULL) {
-		warn("basename: %s", path);
+		stag_warn("basename: %s", path);
 		goto er;
 	}
 	(void)strlcpy(ret->name, tmp, NAME_MAX);
 	if ((ret->filep = taglib_file_new(path)) == NULL) {
-		warnx("the type of %s cannot be determined or the file cannot "
-		      "be opened", ret->name);
+		stag_warnx("the type of %s cannot be determined or the file"
+				" cannot be opened", ret->name);
 		goto er;
 	}
 	if (!taglib_file_is_valid(ret->filep)) {
-		warnx("the file %s is not valid", ret->name);
+		stag_warnx("the file %s is not valid", ret->name);
 		goto er;
 	}
 	if ((ret->tagp = taglib_file_tag(ret->filep)) == NULL) {
-		warnx("something is wrong with the file %s", ret->name);
+		stag_warnx("something is wrong with the file %s", ret->name);
 		goto er;
 	}
 	ret->mod = ret->mark = 0;
@@ -147,7 +147,7 @@ populate_active(const char *path, unsigned int mode)
 	if ((mode & AFLG_CLR) == AFLG_CLR)
 		clear_active();
 	if ((dirp = opendir(path)) == NULL) {
-		warn("opendir: %s", path);
+		stag_warn("opendir: %s", path);
 		return 1;
 	}
 
@@ -160,7 +160,7 @@ populate_active(const char *path, unsigned int mode)
 		if (strlcat(buf, dp->d_name, PATH_MAX) >= PATH_MAX)
 			goto longer;
 		if (stat(buf, &sb) == -1)  {
-			warn("stat: %s", buf);
+			stag_warn("stat: %s", buf);
 			goto er;
 		}
 
@@ -177,7 +177,7 @@ populate_active(const char *path, unsigned int mode)
 		buf[buf[s] == '/' ? s + 1 : s] = '\0';
 	}
 	if (errno) {
-		warn("readdir");
+		stag_warn("readdir");
 		goto er;
 	}
 
@@ -185,7 +185,7 @@ populate_active(const char *path, unsigned int mode)
 	return 0;
 
 longer:
-	warnx("PATH_MAX of %d violated", PATH_MAX);
+	stag_warnx("PATH_MAX of %d violated", PATH_MAX);
 er:
 	(void)closedir(dirp);
 	return 1;
@@ -249,7 +249,7 @@ revert_entry(struct entry *p)
 
 	if (strlcpy(buf, p->dir, PATH_MAX) >= PATH_MAX ||
 	    strlcat(buf, p->name, PATH_MAX) >= PATH_MAX) {
-		warnx("PATH_MAX of %d violated", PATH_MAX);
+		stag_warnx("PATH_MAX of %d violated", PATH_MAX);
 		return;
 	}
 	if ((np = make_entry(buf)) == NULL)
@@ -301,7 +301,7 @@ revert_marked(void)
 		if (p->mark) {
 			if (strlcpy(buf, p->dir, PATH_MAX) >= PATH_MAX ||
 			    strlcat(buf, p->name, PATH_MAX) >= PATH_MAX) {
-				warnx("PATH_MAX of %d violated", PATH_MAX);
+				stag_warnx("PATH_MAX of %d violated", PATH_MAX);
 				continue;
 			}
 			if ((np = make_entry(buf)) == NULL)
