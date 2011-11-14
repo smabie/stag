@@ -7,7 +7,7 @@
 CC=gcc
 PROG=stag
 FILES=ui.c stag.c tagger.c strlcpy.c strlcat.c basename.c dirname.c
-CFLAGS+=-Wall -ansi -pedantic -D_BSD_SOURCE
+CFLAGS+=-Wall -D_BSD_SOURCE
 CPPFLAGS+=-I/usr/local/include
 LDFLAGS+=-L/usr/local/lib -lmenu -lform -lncursesw -ltag -ltag_c
 
