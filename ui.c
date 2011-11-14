@@ -94,7 +94,7 @@ again:
 				if ((str = strdup(dp->d_name)) == NULL)
 					err(1, "strdup");
 				if ((ret[d] = new_item(str, wtfbuf)) == NULL)
-					err(1, "new_item");
+					err(1, "new_item: %s", str);
 				set_item_userptr(ret[d++], NULL); 
 			}
 		}
@@ -115,9 +115,9 @@ again:
 	}
 	(void)closedir(dirp);
 	if ((ret[0] = new_item(".", wtfbuf)) == NULL)
-		err(1, "new_item");
+		err(1, "new_item: .");
 	if ((ret[1] = new_item("..", wtfbuf)) == NULL)
-		err(1, "new_item");
+		err(1, "new_item: ..");
 	item_sort(ret + 2, 0, size - 2);
 	return ret;
 longer:
@@ -154,7 +154,7 @@ list_make_items()
        
 	LIST_FOREACH(p, &active, entries) {
 		if ((ret[d] = new_item(p->name, wtfbuf)) == NULL)
-			err(1, "new_item");
+			err(1, "new_item: %s", p->name);
 		set_item_userptr(ret[d++], p); 
 	}
 
@@ -221,19 +221,19 @@ info_make_items(const struct entry *p, int many)
 	(void)snprintf(yearbuf, 5, "%d", INT_MANY(taglib_tag_year));
 
 	if ((ret[0] = new_item(trackbuf, wtfbuf)) == NULL)
-		err(1, "new_item");
+		err(1, "new_item: %s", trackbuf);
 	if ((ret[1] = new_item(SAFE(MANY(taglib_tag_title)), wtfbuf)) == NULL)
-		err(1, "new_item");
+		err(1, "new_item: %s", SAFE(MANY(taglib_tag_title)));
 	if ((ret[2] = new_item(SAFE(MANY(taglib_tag_artist)), wtfbuf)) == NULL)
-		err(1, "new_item");
+		err(1, "new_item: %s", SAFE(MANY(taglib_tag_artist)));
 	if ((ret[3] = new_item(SAFE(MANY(taglib_tag_album)), wtfbuf)) == NULL)
-		err(1, "new_item");
+		err(1, "new_item: %s", SAFE(MANY(taglib_tag_album)));
 	if ((ret[4] = new_item(SAFE(MANY(taglib_tag_genre)), wtfbuf)) == NULL)
-		err(1, "new_item");
+		err(1, "new_item: %s", SAFE(MANY(taglib_tag_genre)));
 	if ((ret[5] = new_item(yearbuf, wtfbuf)) == NULL)
-		err(1, "new_item");
+		err(1, "new_item: %s", yearbuf);
 	if ((ret[6] = new_item(SAFE(MANY(taglib_tag_comment)), wtfbuf)) == NULL)
-		err(1, "new_item");
+		err(1, "new_item: %s", SAFE(MANY(taglib_tag_comment)));
 	ret[7] = NULL;
 
 	return ret;
