@@ -6,6 +6,7 @@
 #include "stag.h"
 
 #define SAFE(s) (strlen(s) != 0 ? (s) : " ")
+#define INT_SAFE(s) ((*s) != '0' ? (s) : " ")
 
 /* 
  * This is fucking retarded but is useful.
@@ -220,7 +221,7 @@ info_make_items(const struct entry *p, int many)
 	(void)snprintf(trackbuf, 3, "%d", INT_MANY(taglib_tag_track));
 	(void)snprintf(yearbuf, 5, "%d", INT_MANY(taglib_tag_year));
 
-	if ((ret[0] = new_item(trackbuf, wtfbuf)) == NULL)
+	if ((ret[0] = new_item(INT_SAFE(trackbuf), wtfbuf)) == NULL)
 		err(1, "new_item: %s", trackbuf);
 	if ((ret[1] = new_item(SAFE(MANY(taglib_tag_title)), wtfbuf)) == NULL)
 		err(1, "new_item: %s", SAFE(MANY(taglib_tag_title)));
@@ -230,7 +231,7 @@ info_make_items(const struct entry *p, int many)
 		err(1, "new_item: %s", SAFE(MANY(taglib_tag_album)));
 	if ((ret[4] = new_item(SAFE(MANY(taglib_tag_genre)), wtfbuf)) == NULL)
 		err(1, "new_item: %s", SAFE(MANY(taglib_tag_genre)));
-	if ((ret[5] = new_item(yearbuf, wtfbuf)) == NULL)
+	if ((ret[5] = new_item(INT_SAFE(yearbuf), wtfbuf)) == NULL)
 		err(1, "new_item: %s", yearbuf);
 	if ((ret[6] = new_item(SAFE(MANY(taglib_tag_comment)), wtfbuf)) == NULL)
 		err(1, "new_item: %s", SAFE(MANY(taglib_tag_comment)));
@@ -249,12 +250,12 @@ draw_info(const struct entry *p, WINDOW *win)
 	(void)snprintf(yearbuf, 5, "%d", taglib_tag_year(p->tagp));
 	(void)snprintf(trackbuf, 3, "%d", taglib_tag_track(p->tagp));
 
-	mvwprintw(win, 0, 0, "%c%s\n", S(), trackbuf);
+	mvwprintw(win, 0, 0, "%c%s\n", S(), INT_SAFE(trackbuf));
 	mvwprintw(win, 1, 0, "%c%s\n", S(), SAFE(taglib_tag_title(p->tagp)));
 	mvwprintw(win, 2, 0, "%c%s\n", S(), SAFE(taglib_tag_artist(p->tagp)));
 	mvwprintw(win, 3, 0, "%c%s\n", S(), SAFE(taglib_tag_album(p->tagp)));
 	mvwprintw(win, 4, 0, "%c%s\n", S(), SAFE(taglib_tag_genre(p->tagp)));
-	mvwprintw(win, 5, 0, "%c%s\n", S(), yearbuf);
+	mvwprintw(win, 5, 0, "%c%s\n", S(), INT_SAFE(yearbuf));
 	mvwprintw(win, 6, 0, "%c%s\n", S(), SAFE(taglib_tag_comment(p->tagp)));
 }
 
