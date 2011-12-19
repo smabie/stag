@@ -179,7 +179,7 @@ resize:
 					curdir[1] = '\0';
 				else
 					*s = '\0';
-			} else {
+			} else if (strcmp(item_name(item), ".") != 0) {
 				if ((tmp = strlen(curdir)) >= PATH_MAX)
 					goto longer;
 				curdir[tmp] = '/';
