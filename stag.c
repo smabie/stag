@@ -51,9 +51,12 @@ main(int argc, char **argv)
 	
 	(void)setlocale(LC_ALL, "");
 
-	for (d = 1; d < argc; d++)
+	for (d = 1; d < argc; d++) {
+		if (access(argv[d], R_OK | W_OK | X_OK) == -1)
+			err(1, "access: %s", argv[d]);
 		if (populate_active(argv[d], AFLG_REC))
 			return 1;
+	}
 	/* 
 	 * This jump is awful and makes things initially difficult to reason
 	 * about.
