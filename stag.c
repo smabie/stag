@@ -545,11 +545,13 @@ resize:
 			break;
 		case 'b':	/* M-b */
 			if (metap) {
+				metap = 0;
 				form_driver(edit_form, REQ_PREV_WORD);
 				break;
 			}
 		case 'f':	/* M-f */
 			if (metap) {
+				metap = 0;
 				form_driver(edit_form, REQ_NEXT_WORD);
 				break;
 			}
