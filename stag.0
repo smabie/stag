@@ -134,12 +134,16 @@ EEDDIITT--MMOODDEE
      C-b | LEFT
                 Move back one character.
 
+     M-b        Jump back one word.
+
      C-d        Delete character under cursor.
 
      C-e        Jump to the end of the line.
 
      C-f | RIGHT
                 Move forward one character.
+
+     M-f        Jump forward one word.
 
      C-k        Delete from the cursor to the end of the line.
 

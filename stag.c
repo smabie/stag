@@ -37,10 +37,12 @@ main(int argc, char **argv)
 	struct entry *p;
 	char curdir[PATH_MAX], hostname[MAXHOSTNAMELEN], *s;
 	int c, hidden, tmp, many, d, regexp, dir_idx, file_idx, info_idx, idx;
+	int metap;
 	enum { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE } state;
 
 	(void)gethostname(hostname, MAXHOSTNAMELEN);
 	idx = dir_idx = file_idx = info_idx = regexp = many = hidden = 0;
+	metap = 0;
 	state = DIR_MODE;
 	info_menu = NULL;
 	p = NULL;
@@ -63,7 +65,7 @@ main(int argc, char **argv)
 	 */
 resize:
 	initscr();
-	cbreak();
+	raw();
 	noecho();
 	nonl();
 
@@ -94,6 +96,12 @@ resize:
 	intrflush(file_win, FALSE);
  	intrflush(info_win, FALSE);
 	intrflush(edit_win, FALSE);
+
+	meta(stdscr, TRUE);
+	meta(dir_win, TRUE);
+	meta(file_win, TRUE);
+	meta(info_win, TRUE);
+	meta(edit_win, TRUE);
 
 	if (getcwd(curdir, PATH_MAX) == NULL)
 		err(1, "getcwd");
@@ -532,6 +540,19 @@ resize:
 		case 11:	/* C-k */
 			form_driver(edit_form, REQ_CLR_EOF);
 			break;
+		case 27:	/* meta key */
+			metap = 1;
+			break;
+		case 'b':	/* M-b */
+			if (metap) {
+				form_driver(edit_form, REQ_PREV_WORD);
+				break;
+			}
+		case 'f':	/* M-f */
+			if (metap) {
+				form_driver(edit_form, REQ_NEXT_WORD);
+				break;
+			}
 		default:
 			form_driver(edit_form, c);
 			break;

@@ -116,11 +116,11 @@ Therefore transforming a
 .Em selected
 file into a unselected file and vice versa.
 .It /
-Prompts the user for an ERE (see 
+Prompts the user for an ERE (see
 .Xr re_format 7 )
 and toggles the selection status of
 all files that have tags that match the ERE. The tags are compiled into one
-string of the form 
+string of the form
 .Dq track: %d title: %s artist: %s album: %s genre: %s year: %d comment: %s
 for matching purposes.
 .It a
@@ -210,12 +210,16 @@ Switch to
 Jump to the beginning of the line.
 .It C-b | LEFT
 Move back one character.
+.It M-b
+Jump back one word.
 .It C-d
 Delete character under cursor.
 .It C-e
 Jump to the end of the line.
 .It C-f | RIGHT
 Move forward one character.
+.It M-f
+Jump forward one word.
 .It C-k
 Delete from the cursor to the end of the line.
 .El
