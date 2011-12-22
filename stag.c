@@ -54,8 +54,10 @@ main(int argc, char **argv)
 	(void)setlocale(LC_ALL, "");
 
 	for (d = 1; d < argc; d++) {
-		if (access(argv[d], R_OK | W_OK | X_OK) == -1)
-			err(1, "access: %s", argv[d]);
+		if (access(argv[d], R_OK | W_OK | X_OK) == -1) {
+			warn(1, "access: %s", argv[d]);
+			continue;
+		}
 		if (populate_active(argv[d], AFLG_REC))
 			return 1;
 	}
@@ -241,7 +243,7 @@ resize:
 			}
 
 			post_menu(file_menu);
-
+ 
 			wrefresh(info_win);
 			wrefresh(file_win);
 			refresh();
