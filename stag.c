@@ -55,7 +55,7 @@ main(int argc, char **argv)
 
 	if (getopt(argc, argv, "") != -1) {
 		(void)fprintf(stderr, "usage: %s [directory ...]\n", PROG_NAME);
-		exit(1)
+		exit(1);
 	}
 
 	for (d = 1; d < argc; d++) {
