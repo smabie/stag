@@ -158,8 +158,9 @@ resize:
 	wrefresh(file_win);
 	wrefresh(dir_win);
 
-	while ((c = wgetch(state == DIR_MODE ? dir_win :
-			   (state == FILE_MODE ? file_win : info_win))) != EOF) {
+	while ((c = wgetch(state == DIR_MODE ? 
+			   dir_win : (state == FILE_MODE ? 
+				      file_win : info_win))) != EOF) {
 		if (c == 'q' && state != EDIT_MODE)
 			break;
 		if (resizep) {
@@ -311,7 +312,8 @@ resize:
 			for (d = 0; d < item_count(file_menu); d++, 
 				     menu_driver(file_menu, REQ_DOWN_ITEM)) {
 				if (regexec(&reg, make_regex_str
-					    (ENTRY(file_menu)->tagp), 0, NULL, 0)
+					    (ENTRY(file_menu)->tagp), 
+					    0, NULL, 0)
 				    == 0) {
 					ENTRY(file_menu)->mark = 
 						!ENTRY(file_menu)->mark;
@@ -325,7 +327,8 @@ resize:
 			menu_driver(file_menu, REQ_FIRST_ITEM);
 			for (d = 0; d < item_count(file_menu); d++, 
 				     menu_driver(file_menu, REQ_DOWN_ITEM)) {
-				ENTRY(file_menu)->mark = !ENTRY(file_menu)->mark;
+				ENTRY(file_menu)->mark = 
+					!ENTRY(file_menu)->mark;
 				menu_driver(file_menu, REQ_TOGGLE_ITEM);
 			}
 			nth_item(file_menu, idx);
