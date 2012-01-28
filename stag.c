@@ -5,6 +5,9 @@
 
 #include "stag.h"
 
+/* 
+ * Access entry from list item.
+ */
 #define ENTRY(x) ((struct entry *)					\
 		  (item_userptr(current_item((const MENU *)(x)))))
 
@@ -190,38 +193,6 @@ resize:
 		}
 		if (state == DIR_MODE)
 		switch (c) {
-		case 13:	/* LF: step into directory */
-			item = current_item((const MENU *)dir_menu);
-			
-			if (strcmp(item_name(item), "..") == 0) {
-				if ((s = strrchr(curdir, '/')) == curdir)
-					curdir[1] = '\0';
-				else
-					*s = '\0';
-			} else if (strcmp(item_name(item), ".") != 0) {
-				if ((tmp = strlen(curdir)) >= PATH_MAX)
-					goto longer;
-				curdir[tmp] = '/';
-				curdir[tmp + 1] = '\0';
-				
-				if (strlcat(curdir, item_name(item), PATH_MAX)
-				    >= PATH_MAX)
-					goto longer;
-			}
-
-			unpost_menu(dir_menu);
-			items = menu_items(dir_menu);
-			set_menu_items(dir_menu, 
-				       path_make_items(curdir, hidden));
-			free_item_strings(items);
-			free_items(items);
-			free(items);
-			post_menu(dir_menu);
-			break;
-		longer:
-			stag_warnx("PATH_MAX of %d violated", PATH_MAX);
-			curdir[tmp] = '\0';
-			break;
   		case ' ':	/* add all mp3/flac/ogg files */
 			if ((tmp = strlen(curdir)) >= PATH_MAX)
 				goto longer;
@@ -254,6 +225,39 @@ resize:
 			wrefresh(file_win);
 			refresh();
 			break;
+		case 13:	/* LF: step into directory */
+			item = current_item((const MENU *)dir_menu);
+			
+			if (strcmp(item_name(item), "..") == 0) {
+				if ((s = strrchr(curdir, '/')) == curdir)
+					curdir[1] = '\0';
+				else
+					*s = '\0';
+			} else if (strcmp(item_name(item), ".") != 0) {
+				if ((tmp = strlen(curdir)) >= PATH_MAX)
+					goto longer;
+				curdir[tmp] = '/';
+				curdir[tmp + 1] = '\0';
+				
+				if (strlcat(curdir, item_name(item), PATH_MAX)
+				    >= PATH_MAX)
+					goto longer;
+			}
+
+			unpost_menu(dir_menu);
+			items = menu_items(dir_menu);
+			set_menu_items(dir_menu, 
+				       path_make_items(curdir, hidden));
+			free_item_strings(items);
+			free_items(items);
+			free(items);
+			post_menu(dir_menu);
+			break;
+		longer:
+			stag_warnx("PATH_MAX of %d violated", PATH_MAX);
+			curdir[tmp] = '\0';
+			break;
+
 		case 'h':	/* toggle hidden directories */
 			unpost_menu(dir_menu);
 			items = menu_items(dir_menu);
@@ -290,6 +294,10 @@ resize:
 
 		if (state == FILE_MODE)
 		switch (c) {
+		case ' ':	/* toggle mark */
+			ENTRY(file_menu)->mark = !ENTRY(file_menu)->mark;
+			menu_driver(file_menu, REQ_TOGGLE_ITEM);
+			break;
 		case 13:	/* LF: single edit */
 			set_menu_items(info_menu, 
 				       info_make_items(ENTRY(file_menu), 0));
@@ -389,10 +397,7 @@ resize:
 		case 'o':
 			state = DIR_MODE;
 			continue;
-		case ' ':	/* toggle mark */
-			ENTRY(file_menu)->mark = !ENTRY(file_menu)->mark;
-			menu_driver(file_menu, REQ_TOGGLE_ITEM);
-			break;
+
 		case KEY_DOWN:
 		case 'n':
 			menu_driver(file_menu, REQ_DOWN_ITEM);
