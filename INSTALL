@@ -1,6 +1,15 @@
 Compile and install with:
 
 $ make
+
+if you want to compile stag with ncurses wide character support:
+ 
+$ make CURSES=-lncursesw
+
+otherwise:
+
+$ make
+
 $ cp stag /path/to/bin/
 $ cp stag.1 /path/to/man/
 
