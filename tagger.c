@@ -24,7 +24,8 @@ const char *ext[] = {
 struct h active = LIST_HEAD_INITIALIZER(active);
 
 /* 
- * Based on the mode, determine if s is of an applicable type.
+ * Based on the mode, determine if s is of an applicable type (currently
+ * {flac,ogg,mp3}).
  */
 int is_valid_extension(const char *s, unsigned int mode)
 {
@@ -169,9 +170,10 @@ populate_active(const char *path, unsigned int mode)
 			if (populate_active(buf, mode) == 1)
 				goto er;
 		} else if (is_valid_extension(dp->d_name, mode)) {
-			if ((ep = make_entry(buf)) == NULL)
-				goto er;
-			LIST_INSERT_HEAD(&active, ep, entries);
+			if ((ep = make_entry(buf)) == NULL) 
+				stag_warnx("skipping %s...", buf); 
+			else
+				LIST_INSERT_HEAD(&active, ep, entries);
 		}
 
 		buf[buf[s] == '/' ? s + 1 : s] = '\0';
@@ -257,6 +259,8 @@ revert_entry(struct entry *p)
 	LIST_REPLACE(p , np, entries);
 	free_entry(p);
 }
+
+
 void remove_entry(struct entry *p)
 {
 	LIST_REMOVE(p, entries);
@@ -329,6 +333,9 @@ remove_marked(void)
 	}
 }
 
+/* 
+ * Set title of all marked entries in the active list.
+ */
 void
 set_marked_title(const char *s)
 {
@@ -340,6 +347,9 @@ set_marked_title(const char *s)
 	}
 }
 
+/* 
+ * Set artist of all marked entries in the active list.
+ */
 void
 set_marked_artist(const char *s)
 {
@@ -351,6 +361,9 @@ set_marked_artist(const char *s)
 	}
 }
 
+/* 
+ * Set album of all marked entries in the active list.
+ */
 void
 set_marked_album(const char *s)
 {
@@ -362,6 +375,9 @@ set_marked_album(const char *s)
 	}
 }
 
+/* 
+ * Set comment of all marked entries in the active list.
+ */
 void
 set_marked_comment(const char *s)
 {
@@ -371,8 +387,13 @@ set_marked_comment(const char *s)
 		if (p->mark)
 			set_comment(p, s);
 	}
+
 }
 
+
+/* 
+ * Set genre of all marked entries in the active list.
+ */
 void
 set_marked_genre(const char *s)
 {
@@ -385,6 +406,9 @@ set_marked_genre(const char *s)
 }
 
 
+/* 
+ * Set year of all marked entries in the active list.
+ */
 void
 set_marked_year(unsigned int c)
 {
@@ -396,6 +420,10 @@ set_marked_year(unsigned int c)
 	}
 }
 
+
+/* 
+ * Set track numbre of all marked entries in the active list.
+ */
 void
 set_marked_track(unsigned int c)
 {

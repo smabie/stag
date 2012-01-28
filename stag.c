@@ -609,6 +609,9 @@ str_cleanup(char *s)
 	return ret;
 }
 
+/* 
+ * generate string to match against.
+ */
 const char *
 make_regex_str(TagLib_Tag *p)
 {
