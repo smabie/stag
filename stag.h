@@ -25,9 +25,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef NCURSESW_WIDE
+#include <ncursesw/curses.h>
+#include <ncursesw/form.h>
+#include <ncursesw/menu.h>
+#else
 #include <curses.h>
 #include <form.h>
 #include <menu.h>
+#endif /* NCURSESW_WIDE */
 
 #include <taglib/tag_c.h>
 

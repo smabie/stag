@@ -6,11 +6,14 @@
 
 CC=gcc
 PROG=stag
-CURSES=-lncurses
+CURSES=-lncurses -lmenu -lform 
+CURSESW=-lncursesw -lmenuw -lformw -D_CURSESW_WIDE
 FILES=ui.c stag.c tagger.c strlcpy.c strlcat.c basename.c dirname.c
 CFLAGS+=-ansi -pedantic -Wall -D_BSD_SOURCE
 CPPFLAGS+=-I/usr/local/include
-LDFLAGS+=-L/usr/local/lib -lmenu -lform  $(CURSES)  -ltag -ltag_c
+LDFLAGS+=-L/usr/local/lib  -ltag -ltag_c
 
+wide:
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(CURSESW) $(FILES) -o $(PROG)
 all:
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(FILES) -o $(PROG)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(CURSES) $(FILES) -o $(PROG)

@@ -4,7 +4,7 @@ $ make
 
 if you want to compile stag with ncurses wide character support:
  
-$ make CURSES=-lncursesw
+$ make wide
 
 otherwise:
 
