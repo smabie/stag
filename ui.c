@@ -79,9 +79,12 @@ again:
 		}
 		if (strlcat(buf, dp->d_name, PATH_MAX) >= PATH_MAX)
 			goto longer;
-		if (stat(buf, &sb) == -1)  {
-			stag_warn("stat: %s", buf);
-			goto er;
+		if (stat(buf, &sb) == -1) {
+			if (lstat(buf, &sb) == -1) {
+				stag_warn("stat: %s", buf);
+				goto er;
+			} 
+			continue;
 		}
 		if ((S_ISDIR(sb.st_mode) || S_ISLNK(sb.st_mode)) &&
 		    (hidden || *dp->d_name != '.')) {
