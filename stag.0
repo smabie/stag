@@ -1,153 +1,153 @@
-STAG(1)			   OpenBSD Reference Manual		       STAG(1)
+STAG(1)                    OpenBSD Reference Manual                    STAG(1)
 
-NAME
-     stag - curses based audio file tagger
+NNAAMMEE
+     ssttaagg - curses based audio file tagger
 
-SYNOPSIS
-     stag [directory ...]
+SSYYNNOOPPSSIISS
+     ssttaagg [_d_i_r_e_c_t_o_r_y _._._.]
 
-DESCRIPTION
-     stag is a curses based audio tagger that supports MP3, OGG, and FLAC
-     audio files. The user interface of stag is split into four seperate
+DDEESSCCRRIIPPTTIIOONN
+     ssttaagg is a curses based audio tagger that supports MP3, OGG, and FLAC
+     audio files. The user interface of ssttaagg is split into four seperate
      panels, corresponding to four unique modes, each with their own set of
-     commands: directory-mode, file-mode, info-mode, and edit-mode.  There are
+     commands: _d_i_r_e_c_t_o_r_y_-_m_o_d_e, _f_i_l_e_-_m_o_d_e, _i_n_f_o_-_m_o_d_e, and _e_d_i_t_-_m_o_d_e.  There are
      a few other terms this man page uses that should be defined in order to
-     avoid ambiguity: active-buffer, a list of files that can be edited with
-     tag editing commands; mark, the currently highlighted element; selected
-     files, a list of files that are a subset of the active-buffer that some
+     avoid ambiguity: _a_c_t_i_v_e_-_b_u_f_f_e_r, a list of files that can be edited with
+     tag editing commands; _m_a_r_k, the currently highlighted element; _s_e_l_e_c_t_e_d
+     files, a list of files that are a subset of the _a_c_t_i_v_e_-_b_u_f_f_e_r that some
      commands uniquely address. While most keybindings are local to the
      current mode, a few keybindings are available with nearly identical
-     semantics in directory-mode, file-mode, and info-mode:
+     semantics in _d_i_r_e_c_t_o_r_y_-_m_o_d_e, _f_i_l_e_-_m_o_d_e, and _i_n_f_o_-_m_o_d_e:
 
-     n		Move the mark down one entry.
+     n          Move the _m_a_r_k down one entry.
 
      C-n | PGDN
-		Move the mark down by one page of entries. In info-mode, this
-		does nothing.
+                Move the _m_a_r_k down by one page of entries. In _i_n_f_o_-_m_o_d_e, this
+                does nothing.
 
-     p | UP	Move the mark up one entry.
+     p | UP     Move the _m_a_r_k up one entry.
 
      C-p | PGUP
-		Move the mark up by one page of entries. In info-mode, this
-		does nothing.
+                Move the _m_a_r_k up by one page of entries. In _i_n_f_o_-_m_o_d_e, this
+                does nothing.
 
-     q		Exit stag.
+     q          Exit ssttaagg.
 
-DIRECTORY-MODE
-     Associated with the left-most panel of the curses interface of stag,
-     directory-mode displays a list of directories in the current directory.
+DDIIRREECCTTOORRYY--MMOODDEE
+     Associated with the left-most panel of the curses interface of ssttaagg,
+     _d_i_r_e_c_t_o_r_y_-_m_o_d_e displays a list of directories in the current directory.
      One then navigates across the filesystem, adding the desired directories
-     to the active-buffer.
+     to the _a_c_t_i_v_e_-_b_u_f_f_e_r.
 
-     The following is the list of keybindings available in directory-mode and
+     The following is the list of keybindings available in _d_i_r_e_c_t_o_r_y_-_m_o_d_e and
      their corresponding actions:
 
-     RET	Enter the directory under the mark.  This then displays the
-		children directories of the directory under the mark in the
-		directory panel.
+     RET        Enter the directory under the _m_a_r_k.  This then displays the
+                children directories of the directory under the _m_a_r_k in the
+                directory panel.
 
-     SPC	Recursively add the directories and files to the active-buffer
-		that are children to the directory under the mark.
+     SPC        Recursively add the directories and files to the _a_c_t_i_v_e_-_b_u_f_f_e_r
+                that are children to the directory under the _m_a_r_k.
 
-     h		Toggle whether hidden directories are displayed in the
-		directory panel.
+     h          Toggle whether hidden directories are displayed in the
+                directory panel.
 
-     o | RIGHT	Switch focus to the file panel, thus entering file-mode.
+     o | RIGHT  Switch focus to the file panel, thus entering _f_i_l_e_-_m_o_d_e.
 
-FILE-MODE
-     Associated with the right-most panel of the curses interface of stag,
-     file-mode displays the contents of the active-buffer: a list of audio
+FFIILLEE--MMOODDEE
+     Associated with the right-most panel of the curses interface of ssttaagg,
+     _f_i_l_e_-_m_o_d_e displays the contents of the _a_c_t_i_v_e_-_b_u_f_f_e_r: a list of audio
      files who's tags can be edited with a variety of commands.
 
      The following is a list of keybindings and their associated action that
-     are available in file-mode:
+     are available in _f_i_l_e_-_m_o_d_e:
 
-     RET	Edit the file under the mark, thus switching to info-mode.
+     RET        Edit the file under the _m_a_r_k, thus switching to _i_n_f_o_-_m_o_d_e.
 
-     SPC	Toggles the selection status of the file under the mark.
-		Therefore transforming a selected file into a unselected file
-		and vice versa.
+     SPC        Toggles the selection status of the file under the _m_a_r_k.
+                Therefore transforming a _s_e_l_e_c_t_e_d file into a unselected file
+                and vice versa.
 
-     /		Prompts the user for an ERE (see re_format(7)) and toggles the
-		selection status of all files that have tags that match the
-		ERE. The tags are compiled into one string of the form
-		``track: %d title: %s artist: %s album: %s genre: %s year: %d
-		comment: %s'' for matching purposes.
+     /          Prompts the user for an ERE (see re_format(7)) and toggles the
+                selection status of all files that have tags that match the
+                ERE. The tags are compiled into one string of the form
+                ``track: %d title: %s artist: %s album: %s genre: %s year: %d
+                comment: %s'' for matching purposes.
 
-     a		Toggle the selection status of all files in the active-buffer.
-		Consequently, when no files are selected and this key is
-		pressed, all of the files in the active-buffer will be
-		selected. Pressed again, all of the files will be deselected.
+     a          Toggle the selection status of all files in the _a_c_t_i_v_e_-_b_u_f_f_e_r.
+                Consequently, when no files are selected and this key is
+                pressed, all of the files in the _a_c_t_i_v_e_-_b_u_f_f_e_r will be
+                selected. Pressed again, all of the files will be deselected.
 
-     c		Clear the active-buffer.
+     c          Clear the _a_c_t_i_v_e_-_b_u_f_f_e_r.
 
-     d		Remove the currently selected files.
+     d          Remove the currently _s_e_l_e_c_t_e_d files.
 
-     e		Edit the currently selected files, thus switching to
-		info-mode.
+     e          Edit the currently _s_e_l_e_c_t_e_d files, thus switching to
+                _i_n_f_o_-_m_o_d_e.
 
-     o | LEFT	switch focus to the directory panel, thus entering
-		directory-mode.
+     o | LEFT   switch focus to the directory panel, thus entering
+                _d_i_r_e_c_t_o_r_y_-_m_o_d_e.
 
-     r		Reload the currently selected files from disk, undoing all
-		previous edit operations.
+     r          Reload the currently _s_e_l_e_c_t_e_d files from disk, undoing all
+                previous edit operations.
 
-     s		Write the file under the mark to the disk.
+     s          Write the file under the _m_a_r_k to the disk.
 
-     u		Convert all selected files in the active-buffer into normal
-		files.
+     u          Convert all _s_e_l_e_c_t_e_d files in the _a_c_t_i_v_e_-_b_u_f_f_e_r into normal
+                files.
 
-     w		Write all selected files in the active-buffer to the disk.
+     w          Write all _s_e_l_e_c_t_e_d files in the _a_c_t_i_v_e_-_b_u_f_f_e_r to the disk.
 
-INFO-MODE
-     info-mode is associated with the panel immediately below both the
+IINNFFOO--MMOODDEE
+     _i_n_f_o_-_m_o_d_e is associated with the panel immediately below both the
      directory panel and the file panel. Normally this panel just displays the
-     tag information of the file under the mark.  When in info-mode one can
+     tag information of the file under the _m_a_r_k.  When in _i_n_f_o_-_m_o_d_e one can
      choose a tag to edit.
 
      The following is a list of keybindings and their respective actions
-     available in info-mode:
+     available in _i_n_f_o_-_m_o_d_e:
 
-     LEFT	Switch focus to the directory panel, thus entering
-		directory-mode.
+     LEFT       Switch focus to the directory panel, thus entering
+                _d_i_r_e_c_t_o_r_y_-_m_o_d_e.
 
-     RET	Edit the tag under the mark.  This consequently switches the
-		focus to the edit panel and enters edit-mode.
+     RET        Edit the tag under the _m_a_r_k.  This consequently switches the
+                focus to the edit panel and enters _e_d_i_t_-_m_o_d_e.
 
-     o		Switch the focus  to the file panel, entering file-mode.
+     o          Switch the focus  to the file panel, entering _f_i_l_e_-_m_o_d_e.
 
-EDIT-MODE
-     edit-mode is associated with the last line of the display. In this mode
+EEDDIITT--MMOODDEE
+     _e_d_i_t_-_m_o_d_e is associated with the last line of the display. In this mode
      is where the actual editing of the tag is done. Emacs-style cursor
      movement bindings are used to help facilitate quick editing of tags in
      this mode.
 
      The following is a list of keybindings and their corresponding actions
-     available in edit-mode:
+     available in _e_d_i_t_-_m_o_d_e:
 
-     BACKSPC	Delete character before cursor.
+     BACKSPC    Delete character before cursor.
 
-     RET	Switch to info-mode.
+     RET        Switch to _i_n_f_o_-_m_o_d_e.
 
-     C-a	Jump to the beginning of the line.
+     C-a        Jump to the beginning of the line.
 
      C-b | LEFT
-		Move back one character.
+                Move back one character.
 
-     M-b	Jump back one word.
+     M-b        Jump back one word.
 
-     C-d	Delete character under cursor.
+     C-d        Delete character under cursor.
 
-     C-e	Jump to the end of the line.
+     C-e        Jump to the end of the line.
 
      C-f | RIGHT
-		Move forward one character.
+                Move forward one character.
 
-     M-f	Jump forward one word.
+     M-f        Jump forward one word.
 
-     C-k	Delete from the cursor to the end of the line.
+     C-k        Delete from the cursor to the end of the line.
 
-AUTHORS
-     This program was created by Sturm Mabie (sturm@cryptm.org).
+AAUUTTHHOORRSS
+     This program was created by Sturm Mabie (_s_t_u_r_m_@_c_r_y_p_t_m_._o_r_g).
 
-OpenBSD 5.3		       November 9, 2011			   OpenBSD 5.3
+OpenBSD 5.3                    November 9, 2011                    OpenBSD 5.3
