@@ -219,24 +219,25 @@ info_make_items(const struct entry *p, int many)
 	static char trackbuf[3];
 	static char yearbuf[5];
 	static ITEM *ret[8];
+        ITEM *set;
 
 	(void)snprintf(trackbuf, 3, "%d", INT_MANY(taglib_tag_track));
 	(void)snprintf(yearbuf, 5, "%d", INT_MANY(taglib_tag_year));
 
-	if ((ret[0] = new_item(INT_SAFE(trackbuf), wtfbuf)) == NULL)
-		err(1, "new_item: %s", trackbuf);
-	if ((ret[1] = new_item(SAFE(MANY(taglib_tag_title)), wtfbuf)) == NULL)
-		err(1, "new_item: %s", SAFE(MANY(taglib_tag_title)));
-	if ((ret[2] = new_item(SAFE(MANY(taglib_tag_artist)), wtfbuf)) == NULL)
-		err(1, "new_item: %s", SAFE(MANY(taglib_tag_artist)));
-	if ((ret[3] = new_item(SAFE(MANY(taglib_tag_album)), wtfbuf)) == NULL)
-		err(1, "new_item: %s", SAFE(MANY(taglib_tag_album)));
-	if ((ret[4] = new_item(SAFE(MANY(taglib_tag_genre)), wtfbuf)) == NULL)
-		err(1, "new_item: %s", SAFE(MANY(taglib_tag_genre)));
-	if ((ret[5] = new_item(INT_SAFE(yearbuf), wtfbuf)) == NULL)
-		err(1, "new_item: %s", yearbuf);
-	if ((ret[6] = new_item(SAFE(MANY(taglib_tag_comment)), wtfbuf)) == NULL)
-		err(1, "new_item: %s", SAFE(MANY(taglib_tag_comment)));
+        ret[0] = (set = new_item(INT_SAFE(trackbuf), wtfbuf)) == NULL
+                ? new_item(" ", wtfbuf) : set;
+        ret[1] = (set = new_item(SAFE(MANY(taglib_tag_title)), wtfbuf)) == NULL
+                ? new_item(" ", wtfbuf) : set;
+        ret[2] = (set = new_item(SAFE(MANY(taglib_tag_artist)), wtfbuf)) == NULL
+                ? new_item(" ", wtfbuf) : set;
+        ret[3] = (set = new_item(SAFE(MANY(taglib_tag_album)), wtfbuf)) == NULL
+                ? new_item(" ", wtfbuf) : set;
+        ret[4] = (set = new_item(SAFE(MANY(taglib_tag_genre)), wtfbuf)) == NULL
+                ? new_item(" ", wtfbuf) : set;
+        ret[5] = (set = new_item(INT_SAFE(yearbuf), wtfbuf)) == NULL
+                ? new_item(" ", wtfbuf) : set;
+        ret[6] = (set = new_item(SAFE(MANY(taglib_tag_comment)), wtfbuf)) 
+                == NULL ? new_item(" ", wtfbuf) : set;
 	ret[7] = NULL;
 
 	return ret;
