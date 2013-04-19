@@ -101,6 +101,7 @@ void nth_item(MENU *, int);
 unsigned int all_equal_int(unsigned int (*)(const TagLib_Tag *));
 char *all_equal_str(char *(*)(const TagLib_Tag *));
 char *str_cleanup(char *);
+char *clean_xstrdup(char *);
 const char *make_regex_str(TagLib_Tag *);
 void resize(int);
 

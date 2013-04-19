@@ -54,7 +54,6 @@ path_make_items(const char *path, int hidden)
 	struct dirent *dp;
 	ITEM **ret;
 	static char buf[PATH_MAX];
-	char *str;
 	size_t size;
 	int first;
 	int d;
@@ -94,10 +93,9 @@ again:
 			if (first)
 				size++;
 			else {
-				if ((str = strdup(dp->d_name)) == NULL)
-					err(1, "strdup");
-				if ((ret[d] = new_item(str, wtfbuf)) == NULL)
-					err(1, "new_item: %s", str);
+				if ((ret[d] = new_item(clean_xstrdup(dp->d_name), 
+                                                       wtfbuf)) == NULL)
+					err(1, "new_item: %s", dp->d_name);
 				set_item_userptr(ret[d++], NULL); 
 			}
 		}
@@ -219,25 +217,20 @@ info_make_items(const struct entry *p, int many)
 	static char trackbuf[3];
 	static char yearbuf[5];
 	static ITEM *ret[8];
-        ITEM *set;
 
+        bzero(ret, sizeof(ITEM *) * 8);
 	(void)snprintf(trackbuf, 3, "%d", INT_MANY(taglib_tag_track));
 	(void)snprintf(yearbuf, 5, "%d", INT_MANY(taglib_tag_year));
 
-        ret[0] = (set = new_item(INT_SAFE(trackbuf), wtfbuf)) == NULL
-                ? new_item(" ", wtfbuf) : set;
-        ret[1] = (set = new_item(SAFE(MANY(taglib_tag_title)), wtfbuf)) == NULL
-                ? new_item(" ", wtfbuf) : set;
-        ret[2] = (set = new_item(SAFE(MANY(taglib_tag_artist)), wtfbuf)) == NULL
-                ? new_item(" ", wtfbuf) : set;
-        ret[3] = (set = new_item(SAFE(MANY(taglib_tag_album)), wtfbuf)) == NULL
-                ? new_item(" ", wtfbuf) : set;
-        ret[4] = (set = new_item(SAFE(MANY(taglib_tag_genre)), wtfbuf)) == NULL
-                ? new_item(" ", wtfbuf) : set;
-        ret[5] = (set = new_item(INT_SAFE(yearbuf), wtfbuf)) == NULL
-                ? new_item(" ", wtfbuf) : set;
-        ret[6] = (set = new_item(SAFE(MANY(taglib_tag_comment)), wtfbuf)) 
-                == NULL ? new_item(" ", wtfbuf) : set;
+        free_item_strings(ret);
+
+        ret[0] = new_item(clean_xstrdup(INT_SAFE(trackbuf)), wtfbuf);
+        ret[1] = new_item(clean_xstrdup(SAFE(MANY(taglib_tag_title))), wtfbuf);
+        ret[2] = new_item(clean_xstrdup(SAFE(MANY(taglib_tag_artist))), wtfbuf);
+        ret[3] = new_item(clean_xstrdup(SAFE(MANY(taglib_tag_album))), wtfbuf);
+        ret[4] = new_item(clean_xstrdup(SAFE(MANY(taglib_tag_genre))), wtfbuf);
+        ret[5] = new_item(clean_xstrdup(INT_SAFE(yearbuf)), wtfbuf);
+        ret[6] = new_item(clean_xstrdup(SAFE(MANY(taglib_tag_comment))), wtfbuf);
 	ret[7] = NULL;
 
 	return ret;
@@ -290,6 +283,22 @@ free_item_strings(ITEM **items)
 
 	for (p = items + 2; *p != NULL; p++)
 		free((char *)item_name(*p));
+}
+
+char *
+clean_xstrdup(char *s)
+{
+        char *ret;
+
+        if ((ret = strdup(s)) == NULL)
+                err(1, "strdup: ");
+
+        for (s = ret; *s != '\0'; s++) {
+                if (!isprint(*s))
+                        *s = ' ';
+        }
+
+        return ret;
 }
 
 void
