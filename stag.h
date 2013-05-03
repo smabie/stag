@@ -119,6 +119,8 @@ WINDOW *make_win(int, int, int, int);
 MENU *make_menu(ITEM **, WINDOW *);
 
 void init_screen();
+void destroy_screen();
+
 void nth_item(MENU *, int);
 unsigned int all_equal_int(unsigned int (*)(const TagLib_Tag *));
 char *all_equal_str(char *(*)(const TagLib_Tag *));

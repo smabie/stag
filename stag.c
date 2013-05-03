@@ -135,19 +135,9 @@ resize:
 
 			resizep = 0;
 			ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-			resize_term(w.ws_row, w.ws_col);
-			
-			erase();
-			werase(file.win);
-			werase(dir.win);
-			werase(info.win);
-			
-			delwin(dir.win);
-			delwin(file.win);
-			delwin(info.win);
-			delwin(edit.win);
-			endwin();
-			
+			resize_term(w.ws_row, w.ws_col);			
+                        destroy_screen();
+
 			goto resize;
 		}
 		if (state == DIR_MODE)
@@ -445,11 +435,7 @@ resize:
 			wrefresh(edit.win);
 	}	
 
-	delwin(dir.win);
-	delwin(file.win);
-	delwin(info.win);
-	delwin(edit.win);
-	endwin();	
+        destroy_screen();
 
 	return 0;
 }
@@ -482,6 +468,21 @@ init_screen()
 	meta(stdscr, TRUE);
 
 	set_menu_format(NULL, LINES - INFO_LEN - 1, 0);
+}
+
+void
+destroy_screen()
+{
+        erase();
+        werase(file.win);
+        werase(dir.win);
+        werase(info.win);
+	
+        delwin(dir.win);
+        delwin(file.win);
+        delwin(info.win);
+        delwin(edit.win);
+        endwin();
 }
 
 WINDOW *
