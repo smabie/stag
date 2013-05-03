@@ -60,7 +60,6 @@ main(int argc, char **argv)
 
 	signal(SIGWINCH, resize);
 	(void)memset(wtfbuf, ' ', 1023);
-	wtfbuf[1023] = '\0';
 	
 	(void)setlocale(LC_ALL, "");
 
