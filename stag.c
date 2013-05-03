@@ -19,14 +19,16 @@
 	} while (0)					
 
 struct {
-        WINDOW  *win;
-        MENU    *menu;
+        WINDOW *win;
+        MENU   *menu;
+        int    idx; 
         
 } dir, file, info;
 
 struct {
         WINDOW  *win;
         FORM    *form;
+        FIELD   *field[2];
 } edit;
 
 int resizep = 0;
@@ -44,15 +46,13 @@ main(int argc, char **argv)
 	struct winsize w;
 	regex_t reg;
 	ITEM **items, *item;
-	FIELD *edit_field[2];
 	struct entry *p;
-	char curdir[PATH_MAX], hostname[MAXHOSTNAMELEN], *s;
-	int c, hidden, tmp, many, d, regexp, dir_idx, file_idx, info_idx, idx;
+	char curdir[PATH_MAX], *s;
+	int c, hidden, tmp, many, d, regexp, idx;
 	int metap;
 	enum { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE } state;
 
-	(void)gethostname(hostname, MAXHOSTNAMELEN);
-	idx = dir_idx = file_idx = info_idx = regexp = many = hidden = 0;
+	idx  = regexp = many = hidden = 0;
 	metap = 0;
 	state = DIR_MODE;
 	info.menu = NULL;
@@ -62,6 +62,9 @@ main(int argc, char **argv)
 	(void)memset(wtfbuf, ' ', 1023);
 	
 	(void)setlocale(LC_ALL, "");
+
+        if (getcwd(curdir, PATH_MAX) == NULL)
+		err(1, "getcwd");
 
 	if (getopt(argc, argv, "") != -1) {
 		(void)fprintf(stderr, "usage: %s [directory ...]\n", PROG_NAME);
@@ -81,71 +84,27 @@ main(int argc, char **argv)
 	 * about.
 	 */
 resize:
-	initscr();
-	raw();
-	noecho();
-	nonl();
+        init_screen();
 
-	mvvline(1, COLS / 2, 0, LINES - INFO_LEN - 1);
-	mvhline(LINES - INFO_LEN, 0, 0, COLS);
-	mvprintw(0, COLS - sizeof(PROG_NAME) - strlen(hostname) - 1,
-		 "%s@%s", PROG_NAME, hostname);
-	mvprintw(LINES - INFO_LEN + 1, 0, "track:\t ");
-	mvprintw(LINES - INFO_LEN + 2, 0, "title:\t ");
-	mvprintw(LINES - INFO_LEN + 3, 0, "artist:\t ");
-	mvprintw(LINES - INFO_LEN + 4, 0, "album:\t ");
-	mvprintw(LINES - INFO_LEN + 5, 0, "genre:\t ");
-	mvprintw(LINES - INFO_LEN + 6, 0, "year:\t ");
-	mvprintw(LINES - INFO_LEN + 7, 0, "comment:\t ");
+        dir.idx = file.idx = info.idx = 0;
 
-	dir.win = newwin(LINES - INFO_LEN - 1, COLS / 2, 1, 0);
-	file.win = newwin(LINES - INFO_LEN - 1, COLS / 2, 1, COLS / 2 + 1);
-	info.win = newwin(INFO_LEN - 1, COLS, LINES - INFO_LEN + 1, 9);
-	edit.win = newwin(1, COLS, LINES - 1, 0);
+	dir.win = make_win(LINES - INFO_LEN - 1, COLS / 2, 1, 0);
+	file.win = make_win(LINES - INFO_LEN - 1, COLS / 2, 1, COLS / 2 + 1);
+	info.win = make_win(INFO_LEN - 1, COLS, LINES - INFO_LEN + 1, 9);
+	edit.win = make_win(1, COLS, LINES - 1, 0);
 
-	keypad(dir.win, TRUE);
-	keypad(file.win, TRUE);
-	keypad(info.win, TRUE);
-	keypad(edit.win, TRUE);
-
-	intrflush(stdscr, FALSE);
-	intrflush(dir.win, FALSE);
-	intrflush(file.win, FALSE);
- 	intrflush(info.win, FALSE);
- 	intrflush(edit.win, FALSE);
-
-	meta(stdscr, TRUE);
-	meta(dir.win, TRUE);
-	meta(file.win, TRUE);
-	meta(info.win, TRUE);
-	meta(edit.win, TRUE);
-
-	if (getcwd(curdir, PATH_MAX) == NULL)
-		err(1, "getcwd");
-
-	set_menu_format(NULL, LINES - INFO_LEN - 1, 0);
-
-	dir.menu = new_menu(path_make_items(curdir, hidden));
-	file.menu = new_menu(NULL);
-	info.menu = new_menu(NULL);
-
-	set_menu_win(dir.menu, dir.win);
-	set_menu_sub(dir.menu, dir.win);
-	set_menu_win(file.menu, file.win);
-	set_menu_sub(file.menu, file.win);
-	set_menu_win(info.menu, info.win);
-	set_menu_sub(info.menu, info.win);
-
-	set_menu_mark(dir.menu, " ");
-	set_menu_mark(file.menu, " ");
-	set_menu_mark(info.menu, " ");
+        dir.menu = make_menu(path_make_items(curdir, hidden), dir.win);
+        file.menu = make_menu(NULL, file.win);
+        info.menu = make_menu(NULL, info.win);
 
 	menu_opts_off(file.menu, O_ONEVALUE);
 
-	edit_field[0] = new_field(1, COLS, 0, 0, 0, 0);
-	edit_field[1] = NULL;
-	field_opts_off(edit_field[0], O_AUTOSKIP | O_STATIC);
-	edit.form = new_form(edit_field);
+	edit.field[0] = new_field(1, COLS, 0, 0, 0, 0);
+	edit.field[1] = NULL;
+
+	field_opts_off(edit.field[0], O_AUTOSKIP | O_STATIC);
+	edit.form = new_form(edit.field);
+
 	set_form_win(edit.form, edit.win);
 	set_form_sub(edit.form, edit.win);
 	
@@ -153,14 +112,14 @@ resize:
 	post_menu(file.menu);
  	post_menu(dir.menu);
 
-	nth_item(dir.menu, dir_idx);
-	nth_item(file.menu, file_idx);
+	nth_item(dir.menu, dir.idx);
+	nth_item(file.menu, file.idx);
 
 	if (state == INFO_MODE) {
 		set_menu_items(info.menu, 
 			       info_make_items(ENTRY(file.menu), 0));
 		post_menu(info.menu);		
-		nth_item(info.menu, info_idx);
+		nth_item(info.menu, info.idx);
 	}
 
 	refresh();
@@ -174,11 +133,11 @@ resize:
 		if (c == 'q' && state != EDIT_MODE)
 			break;
 		if (resizep) {
-			dir_idx = item_index(current_item
+			dir.idx = item_index(current_item
 					     ((const MENU *)dir.menu));
-			file_idx = item_index(current_item
+			file.idx = item_index(current_item
 					      ((const MENU *)file.menu));
-			info_idx = item_index(current_item
+			info.idx = item_index(current_item
 					      ((const MENU *)info.menu));
 
 			resizep = 0;
@@ -461,7 +420,7 @@ resize:
 		if (state == INFO_MODE)
 		switch (c) {
 		case 13:	/* LF: edit entry */
-			set_field_buffer(edit_field[0], 0, 
+			set_field_buffer(edit.field[0], 0, 
 					 item_name(current_item(info.menu)));
 			post_form(edit.form);
 			form_driver(edit.form, REQ_END_FIELD);
@@ -507,9 +466,9 @@ resize:
 		case 13:	/* LF */
 			form_driver(edit.form, REQ_NEXT_FIELD);
 
-			s = str_cleanup(field_buffer(edit_field[0], 0));
+			s = str_cleanup(field_buffer(edit.field[0], 0));
 
-			set_field_buffer(edit_field[0], 0, "");
+			set_field_buffer(edit.field[0], 0, "");
 
 			if (regexp) {
 				regexp = 0;
@@ -594,6 +553,62 @@ resize:
 	endwin();	
 
 	return 0;
+}
+
+void
+init_screen()
+{
+        char hostname[MAXHOSTNAMELEN];
+
+        (void)gethostname(hostname, MAXHOSTNAMELEN);
+        
+        initscr();
+	raw();
+	noecho();
+	nonl();
+
+	mvvline(1, COLS / 2, 0, LINES - INFO_LEN - 1);
+	mvhline(LINES - INFO_LEN, 0, 0, COLS);
+	mvprintw(0, COLS - sizeof(PROG_NAME) - strlen(hostname) - 1,
+		 "%s@%s", PROG_NAME, hostname);
+	mvprintw(LINES - INFO_LEN + 1, 0, "track:\t ");
+	mvprintw(LINES - INFO_LEN + 2, 0, "title:\t ");
+	mvprintw(LINES - INFO_LEN + 3, 0, "artist:\t ");
+	mvprintw(LINES - INFO_LEN + 4, 0, "album:\t ");
+	mvprintw(LINES - INFO_LEN + 5, 0, "genre:\t ");
+	mvprintw(LINES - INFO_LEN + 6, 0, "year:\t ");
+	mvprintw(LINES - INFO_LEN + 7, 0, "comment:\t ");
+
+	intrflush(stdscr, FALSE);
+	meta(stdscr, TRUE);
+
+	set_menu_format(NULL, LINES - INFO_LEN - 1, 0);
+}
+
+WINDOW *
+make_win(int nrow, int ncol, int y, int x)
+{
+        WINDOW *ret;
+        
+        ret = newwin(nrow, ncol, y, x);
+        keypad(ret, TRUE);
+        intrflush(ret, FALSE);
+        meta(ret, TRUE);
+        
+        return ret;
+}
+
+MENU *
+make_menu(ITEM **items, WINDOW *win)
+{
+        MENU *ret;
+
+        ret = new_menu(items);
+        set_menu_mark(ret, " ");
+        set_menu_win(ret, win);
+        set_menu_sub(ret, win);
+        
+        return ret;
 }
 
 /* 

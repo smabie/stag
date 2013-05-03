@@ -82,9 +82,6 @@ struct entry {
 	LIST_ENTRY(entry)	entries;
 };
 
-/* 
- * Suck my dick Ulrich Drepper.
- */
 #ifdef __GLIBC__
 #undef basename
 #undef dirname
@@ -97,6 +94,10 @@ size_t strlcat(char *, const char *, size_t);
 size_t strlcpy(char *, const char *, size_t);
 #endif	/* __GLIBC__ */
 
+WINDOW *make_win(int, int, int, int);
+MENU *make_menu(ITEM **, WINDOW *);
+
+void init_screen();
 void nth_item(MENU *, int);
 unsigned int all_equal_int(unsigned int (*)(const TagLib_Tag *));
 char *all_equal_str(char *(*)(const TagLib_Tag *));
