@@ -43,6 +43,9 @@
  */
 #include "queue.h"		
 
+#define ENTRY(x) ((struct entry *)					\
+		  (item_userptr(current_item((const MENU *)(x)))))
+
 #define PROG_NAME	"stag"
 #define INFO_LEN 9		/* Height of the bottom info window. */
 
@@ -70,7 +73,11 @@ LIST_HEAD(h, entry);
 
 extern struct h active;
 extern char wtfbuf[]; 
+extern char cwd[];
 extern const char *ext[];
+extern struct textbox edit;
+extern struct frame dir, file, info;
+extern enum mode { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE } state;
 
 struct entry {	
  	char			dir[PATH_MAX];  /* set by dirname(3) */
@@ -80,6 +87,18 @@ struct entry {
 	TagLib_File	       *filep;			
 	TagLib_Tag	       *tagp;
 	LIST_ENTRY(entry)	entries;
+};
+
+struct frame {
+        WINDOW *win;
+        MENU   *menu;
+        int     idx;
+};
+
+struct textbox {
+        WINDOW  *win;
+        FORM    *form;
+        FIELD   *field[2];
 };
 
 #ifdef __GLIBC__
@@ -121,6 +140,13 @@ void free_entry(struct entry *);
 void clear_active(void);
 int populate_active(const char *, unsigned int);
 
+void kb_add();
+void kb_enter(int);
+void kb_hide(int *);
+void kb_file_mode();
+void kb_toggle();
+void kb_edit(int *);
+void kb_regex()
 
 void set_title(struct entry *, const char *);
 void set_artist(struct entry *, const char *);

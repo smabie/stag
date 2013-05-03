@@ -18,22 +18,12 @@
 		set_##t (ENTRY(file.menu), s);	\
 	} while (0)					
 
-struct frame {
-        WINDOW *win;
-        MENU   *menu;
-        int    idx; 
-        
-} dir, file, info;
-
-struct {
-        WINDOW  *win;
-        FORM    *form;
-        FIELD   *field[2];
-} edit;
+struct frame dir, file, info;
+struct textbox edit;
 
 int resizep;
 char cwd[PATH_MAX];
-
+enum mode state;
 /* 
  * I don't catch curses functions with (void). It's too annoying. In fact all of
  * this code does mysterious things on errors. Moreover, this code is just
@@ -46,12 +36,11 @@ main(int argc, char **argv)
 {
 	struct winsize w;
 	regex_t reg;
-	ITEM **items, *item;
+	ITEM **items;
 	struct entry *p;
 	char *s;
 	int c, hidden, tmp, many, d, regexp, idx;
 	int metap;
-	enum { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE } state;
 
 	idx  = regexp = many = hidden = 0;
 	metap = 0;
@@ -160,119 +149,25 @@ resize:
 		}
 		if (state == DIR_MODE)
 		switch (c) {
-  		case ' ':	/* add all mp3/flac/ogg files */
-			if ((tmp = strlen(cwd)) >= PATH_MAX)
-				goto longer;
-			cwd[tmp] = '/';
-			cwd[tmp + 1] = '\0';
-
-			item = current_item((const MENU *)dir.menu);
-
-			if (strlcat(cwd, item_name(item), PATH_MAX)
-			    >= PATH_MAX)
-				goto longer;
-			
-			if (populate_active(cwd, AFLG_REC) == 1)
-				return 1;
-
-			cwd[tmp] = '\0';
-
-			unpost_menu(file.menu);			
-			items = menu_items(file.menu);
-			set_menu_items(file.menu, list_make_items());
-
-			if (items != NULL) {
-				free_items(items);
-				free(items);
-			}
-
-			post_menu(file.menu);
- 
-			wrefresh(info.win);
-			wrefresh(file.win);
-			refresh();
-			break;
-		case 13:	/* LF: step into directory */
-			item = current_item((const MENU *)dir.menu);
-			
-			if (strcmp(item_name(item), "..") == 0) {
-				if ((s = strrchr(cwd, '/')) == cwd)
-					cwd[1] = '\0';
-				else
-					*s = '\0';
-			} else if (strcmp(item_name(item), ".") != 0) {
-				if ((tmp = strlen(cwd)) >= PATH_MAX)
-					goto longer;
-				cwd[tmp] = '/';
-				cwd[tmp + 1] = '\0';
-				
-				if (strlcat(cwd, item_name(item), PATH_MAX)
-				    >= PATH_MAX)
-					goto longer;
-			}
-
-			unpost_menu(dir.menu);
-			items = menu_items(dir.menu);
-			set_menu_items(dir.menu, 
-				       path_make_items(cwd, hidden));
-			free_item_strings(items);
-			free_items(items);
-			free(items);
-			post_menu(dir.menu);
-			break;
-		longer:
-			stag_warnx("PATH_MAX of %d violated", PATH_MAX);
-			cwd[tmp] = '\0';
-			break;
-
-		case 'h':	/* toggle hidden directories */
-			unpost_menu(dir.menu);
-			items = menu_items(dir.menu);
-			set_menu_items(dir.menu, 
-				       path_make_items(cwd, 
-						       hidden = !hidden));
-			free_item_strings(items);
-			free_items(items);
-			free(items);
-			post_menu(dir.menu);
-			break;
+  		case ' ':       kb_add();                               break;
+                case 13:        kb_enter(hidden);                       break;
+                case 'h':       kb_hide(&hidden);                       break;
 		case KEY_DOWN:
-		case 'n':
-			menu_driver(dir.menu, REQ_DOWN_ITEM);
-			break;
+		case 'n':       menu_driver(dir.menu, REQ_DOWN_ITEM);   break;
 		case KEY_NPAGE:
-		case 14:	/* C-n */
-			menu_driver(dir.menu, REQ_SCR_DPAGE);
-			break;
-		case KEY_RIGHT:	/* switch focus to active file list */
-		case 'o':
-			if (item_count(file.menu) > 0)
-				state = FILE_MODE;
-			continue;
+		case 14:        menu_driver(dir.menu, REQ_SCR_DPAGE);   break;
+		case KEY_RIGHT:
+		case 'o':       kb_file_mode();                      continue;
 		case KEY_UP:
-		case 'p':
-			menu_driver(dir.menu, REQ_UP_ITEM);
-			break;
+		case 'p':       menu_driver(dir.menu, REQ_UP_ITEM);     break;
 		case KEY_PPAGE:
-		case 16:	/* C-p */
-			menu_driver(dir.menu, REQ_SCR_UPAGE);
-			break;
+		case 16: 	menu_driver(dir.menu, REQ_SCR_UPAGE);	break;
 		}
 
 		if (state == FILE_MODE)
 		switch (c) {
-		case ' ':	/* toggle mark */
-			ENTRY(file.menu)->mark = !ENTRY(file.menu)->mark;
-			menu_driver(file.menu, REQ_TOGGLE_ITEM);
-			break;
-		case 13:	/* LF: single edit */
-			set_menu_items(info.menu, 
-				       info_make_items(ENTRY(file.menu), 0));
-			post_menu(info.menu);
-
-			many = 0;
-			state = INFO_MODE;
-			continue;
+		case ' ':       kb_toggle();                    	break;
+		case 13:	kb_edit(&many);                      continue;
 		case '/':	/* regex select */
 			regexp = 1;
 			post_form(edit.form);
