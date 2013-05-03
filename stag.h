@@ -146,7 +146,7 @@ void kb_hide(int *);
 void kb_file_mode();
 void kb_toggle();
 void kb_edit(int *);
-void kb_regex()
+void kb_regex();
 
 void set_title(struct entry *, const char *);
 void set_artist(struct entry *, const char *);
