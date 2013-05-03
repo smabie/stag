@@ -121,6 +121,7 @@ void free_entry(struct entry *);
 void clear_active(void);
 int populate_active(const char *, unsigned int);
 
+
 void set_title(struct entry *, const char *);
 void set_artist(struct entry *, const char *);
 void set_album(struct entry *, const char *);

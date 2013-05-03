@@ -18,7 +18,7 @@
 		set_##t (ENTRY(file.menu), s);	\
 	} while (0)					
 
-struct {
+struct frame {
         WINDOW *win;
         MENU   *menu;
         int    idx; 
@@ -31,7 +31,8 @@ struct {
         FIELD   *field[2];
 } edit;
 
-int resizep = 0;
+int resizep;
+char cwd[PATH_MAX];
 
 /* 
  * I don't catch curses functions with (void). It's too annoying. In fact all of
@@ -47,7 +48,7 @@ main(int argc, char **argv)
 	regex_t reg;
 	ITEM **items, *item;
 	struct entry *p;
-	char curdir[PATH_MAX], *s;
+	char *s;
 	int c, hidden, tmp, many, d, regexp, idx;
 	int metap;
 	enum { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE } state;
@@ -63,7 +64,7 @@ main(int argc, char **argv)
 	
 	(void)setlocale(LC_ALL, "");
 
-        if (getcwd(curdir, PATH_MAX) == NULL)
+        if (getcwd(cwd, PATH_MAX) == NULL)
 		err(1, "getcwd");
 
 	if (getopt(argc, argv, "") != -1) {
@@ -93,7 +94,7 @@ resize:
 	info.win = make_win(INFO_LEN - 1, COLS, LINES - INFO_LEN + 1, 9);
 	edit.win = make_win(1, COLS, LINES - 1, 0);
 
-        dir.menu = make_menu(path_make_items(curdir, hidden), dir.win);
+        dir.menu = make_menu(path_make_items(cwd, hidden), dir.win);
         file.menu = make_menu(NULL, file.win);
         info.menu = make_menu(NULL, info.win);
 
@@ -160,21 +161,21 @@ resize:
 		if (state == DIR_MODE)
 		switch (c) {
   		case ' ':	/* add all mp3/flac/ogg files */
-			if ((tmp = strlen(curdir)) >= PATH_MAX)
+			if ((tmp = strlen(cwd)) >= PATH_MAX)
 				goto longer;
-			curdir[tmp] = '/';
-			curdir[tmp + 1] = '\0';
+			cwd[tmp] = '/';
+			cwd[tmp + 1] = '\0';
 
 			item = current_item((const MENU *)dir.menu);
 
-			if (strlcat(curdir, item_name(item), PATH_MAX)
+			if (strlcat(cwd, item_name(item), PATH_MAX)
 			    >= PATH_MAX)
 				goto longer;
 			
-			if (populate_active(curdir, AFLG_REC) == 1)
+			if (populate_active(cwd, AFLG_REC) == 1)
 				return 1;
 
-			curdir[tmp] = '\0';
+			cwd[tmp] = '\0';
 
 			unpost_menu(file.menu);			
 			items = menu_items(file.menu);
@@ -195,17 +196,17 @@ resize:
 			item = current_item((const MENU *)dir.menu);
 			
 			if (strcmp(item_name(item), "..") == 0) {
-				if ((s = strrchr(curdir, '/')) == curdir)
-					curdir[1] = '\0';
+				if ((s = strrchr(cwd, '/')) == cwd)
+					cwd[1] = '\0';
 				else
 					*s = '\0';
 			} else if (strcmp(item_name(item), ".") != 0) {
-				if ((tmp = strlen(curdir)) >= PATH_MAX)
+				if ((tmp = strlen(cwd)) >= PATH_MAX)
 					goto longer;
-				curdir[tmp] = '/';
-				curdir[tmp + 1] = '\0';
+				cwd[tmp] = '/';
+				cwd[tmp + 1] = '\0';
 				
-				if (strlcat(curdir, item_name(item), PATH_MAX)
+				if (strlcat(cwd, item_name(item), PATH_MAX)
 				    >= PATH_MAX)
 					goto longer;
 			}
@@ -213,7 +214,7 @@ resize:
 			unpost_menu(dir.menu);
 			items = menu_items(dir.menu);
 			set_menu_items(dir.menu, 
-				       path_make_items(curdir, hidden));
+				       path_make_items(cwd, hidden));
 			free_item_strings(items);
 			free_items(items);
 			free(items);
@@ -221,14 +222,14 @@ resize:
 			break;
 		longer:
 			stag_warnx("PATH_MAX of %d violated", PATH_MAX);
-			curdir[tmp] = '\0';
+			cwd[tmp] = '\0';
 			break;
 
 		case 'h':	/* toggle hidden directories */
 			unpost_menu(dir.menu);
 			items = menu_items(dir.menu);
 			set_menu_items(dir.menu, 
-				       path_make_items(curdir, 
+				       path_make_items(cwd, 
 						       hidden = !hidden));
 			free_item_strings(items);
 			free_items(items);
