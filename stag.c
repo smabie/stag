@@ -24,6 +24,9 @@ struct textbox edit;
 int resizep;
 char cwd[PATH_MAX];
 enum mode state;
+
+jmp_buf env;
+
 /* 
  * I don't catch curses functions with (void). It's too annoying. In fact all of
  * this code does mysterious things on errors. Moreover, this code is just
@@ -369,7 +372,7 @@ resize:
 			if (regexp) {
 				regexp = 0;
 				state = FILE_MODE;
-				goto rjmp; /* ick */
+				goto rjmp;
 			}
 			/* 
 			 * This whole scheme is pretty fucking stupid and should

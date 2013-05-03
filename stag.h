@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <setjmp.h>
 
 #ifdef NCURSESW_WIDE
 #include <ncursesw/curses.h>
@@ -78,6 +79,7 @@ extern const char *ext[];
 extern struct textbox edit;
 extern struct frame dir, file, info;
 extern enum mode { DIR_MODE, FILE_MODE, INFO_MODE, EDIT_MODE } state;
+extern jmp_buf env;
 
 struct entry {	
  	char			dir[PATH_MAX];  /* set by dirname(3) */
