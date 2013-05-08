@@ -161,6 +161,10 @@ void kb_reload();
 void kb_write();
 void kb_unmark();
 void kb_write_marked();
+void kb_edit_field();
+void kb_other();
+void kb_left();
+
 
 void set_title(struct entry *, const char *);
 void set_artist(struct entry *, const char *);

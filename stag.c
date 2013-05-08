@@ -184,46 +184,14 @@ resize:
 
 		if (state == INFO_MODE)
 		switch (c) {
-		case 13:	/* LF: edit entry */
-			set_field_buffer(edit.field[0], 0, 
-					 item_name(current_item(info.menu)));
-			post_form(edit.form);
-			form_driver(edit.form, REQ_END_FIELD);
-
-			/*
-			 * XXX this doesn't make any sense ncurses is fucked up.
-			 */
-			form_driver(edit.form, ' ');
-			form_driver(edit.form, REQ_DEL_PREV);
-
-			wrefresh(edit.win);
-			state = EDIT_MODE;
-			continue;
+		case 13:        kb_edit_field();        	     continue;
 		case KEY_RIGHT:
-		case 'o':	/* switch focus to file list */
-			unpost_menu(info.menu);
-			free_items(menu_items(info.menu));
-			draw_info(ENTRY(file.menu), info.win);
-
-			wrefresh(info.win);
-			state = FILE_MODE;
-			continue;
-		case KEY_LEFT:
-			unpost_menu(info.menu);
-			free_items(menu_items(info.menu));
-			draw_info(ENTRY(file.menu), info.win);
-
-			wrefresh(info.win);
-			state = DIR_MODE;
-			continue;
+		case 'o':	kb_other();     		     continue;
+		case KEY_LEFT:  kb_left();      		     continue;
 		case KEY_DOWN:
-		case 'n':
-			menu_driver(info.menu, REQ_DOWN_ITEM);
-			break;
+		case 'n':       menu_driver(info.menu, REQ_DOWN_ITEM);	break;
 		case KEY_UP:
-		case 'p':
- 			menu_driver(info.menu, REQ_UP_ITEM);
-			break;
+		case 'p':	menu_driver(info.menu, REQ_UP_ITEM);	break;
 		}
 
 		if (state == EDIT_MODE) 
