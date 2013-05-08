@@ -150,7 +150,17 @@ void kb_hide(int *);
 void kb_file_mode();
 void kb_toggle();
 void kb_edit(int *);
-void kb_regex();
+void kb_regex1(int *);
+void kb_regex2(regex_t *, char *);
+void kb_toggle_all();
+void kb_clear();
+void kb_remove();
+void kb_multi_edit(int *);
+void kb_move(int);
+void kb_reload();
+void kb_write();
+void kb_unmark();
+void kb_write_marked();
 
 void set_title(struct entry *, const char *);
 void set_artist(struct entry *, const char *);

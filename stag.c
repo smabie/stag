@@ -39,10 +39,9 @@ main(int argc, char **argv)
 {
 	struct winsize w;
 	regex_t reg;
-	ITEM **items;
 	struct entry *p;
 	char *s;
-	int c, hidden, tmp, many, d, regexp, idx;
+	int c, hidden, many, d, regexp, idx;
 	int metap;
 
 	idx  = regexp = many = hidden = 0;
@@ -161,149 +160,26 @@ resize:
 		switch (c) {
 		case ' ':       kb_toggle();                    	break;
 		case 13:	kb_edit(&many);                      continue;
-		case '/':	/* regex select */
-			regexp = 1;
-			post_form(edit.form);
-			wrefresh(edit.win);
-			state = EDIT_MODE;
-			continue;
-		rjmp:
-			if (regcomp(&reg, s, REG_EXTENDED | 
-				    REG_ICASE | REG_NOSUB) != 0)
-				break;
-			menu_driver(file.menu, REQ_FIRST_ITEM);
-			for (d = 0; d < item_count(file.menu); d++, 
-				     menu_driver(file.menu, REQ_DOWN_ITEM)) {
-				if (regexec(&reg, make_regex_str
-					    (ENTRY(file.menu)->tagp), 
-					    0, NULL, 0)
-				    == 0) {
-					ENTRY(file.menu)->mark = 
-						!ENTRY(file.menu)->mark;
-					menu_driver(file.menu, REQ_TOGGLE_ITEM);
-				}
-			}
-			menu_driver(file.menu, REQ_FIRST_ITEM);
-			break;
-		case 'a':	/* toggle all */
-			idx = item_index(current_item((const MENU *)file.menu));
-			menu_driver(file.menu, REQ_FIRST_ITEM);
-			for (d = 0; d < item_count(file.menu); d++, 
-				     menu_driver(file.menu, REQ_DOWN_ITEM)) {
-				ENTRY(file.menu)->mark = 
-					!ENTRY(file.menu)->mark;
-				menu_driver(file.menu, REQ_TOGGLE_ITEM);
-			}
-			nth_item(file.menu, idx);
-			break;
-		case 'c':	/* clear */
-			unpost_menu(file.menu);
-
-			items = menu_items(file.menu);
-			clear_active();
-			set_menu_items(file.menu, NULL);
-			if (items != NULL) {
-				free_items(items);
-				free(items);
-			}
-
-			post_menu(file.menu);
-			wrefresh(file.win);
-			state = DIR_MODE;
-			continue;
-		case 'd':	/* remove selected from active list */
-			unpost_menu(file.menu);
-			
-			s = ENTRY(file.menu)->name;
-			idx = item_index(current_item((const MENU *)file.menu));
-			items = menu_items(file.menu);
-			remove_marked();
-			set_menu_items(file.menu, list_make_items());
-			if (items != NULL) {
-				free_items(items);
-				free(items);
-			}
-
-			post_menu(file.menu);
-			for (d = 0; d < item_count(file.menu) && 
-				     s != ENTRY(file.menu)->name; d++) {
-				menu_driver(file.menu, REQ_DOWN_ITEM);
-			}
-			/* The selected item was one of the items deleted. */
-			if (d == item_count(file.menu))
-				nth_item(file.menu, idx);
-			wrefresh(file.win);
-			break;
-		case 'e':	/* multi edit */
-			tmp = 1;
-			LIST_FOREACH(p, &active, entries) {
-				if (p->mark)
-					tmp = 0;
-			}
-			if (tmp)
-				break;
-			set_menu_items(info.menu,
-				       info_make_items(ENTRY(file.menu), 1));
-			post_menu(info.menu);
-			many = 1;
-			state = INFO_MODE;
-			continue;
-		case KEY_LEFT:	/* switch focus to directory list */
-		case 'o':
-			state = DIR_MODE;
-			continue;
-
+		case '/':       kb_regex1(&regexp);      	     continue;
+                rjmp:           kb_regex2(&reg, s);                     break;
+		case 'a':       kb_toggle_all();                        break;
+		case 'c':	kb_clear();                          continue;
+		case 'd':	kb_remove();    			break;
+		case 'e':	kb_multi_edit(&many);                continue;
+		case KEY_LEFT:
+		case 'o':	state = DIR_MODE;                    continue;
 		case KEY_DOWN:
-		case 'n':
-			menu_driver(file.menu, REQ_DOWN_ITEM);
-			draw_info(ENTRY(file.menu), info.win);
-			wrefresh(info.win);
-			break;
+		case 'n':       kb_move(REQ_DOWN_ITEM);                 break;
 		case KEY_NPAGE:
-		case 14:	/* C-n */
-			menu_driver(file.menu, REQ_SCR_DPAGE);
-			draw_info(ENTRY(file.menu), info.win);
-			wrefresh(info.win);
-			break;
+		case 14:	kb_move(REQ_SCR_DPAGE);                 break;
 		case KEY_UP:
-		case 'p':
-			menu_driver(file.menu, REQ_UP_ITEM);
-			draw_info(ENTRY(file.menu), info.win);
-			wrefresh(info.win);
-			break;
+		case 'p':       kb_move(REQ_UP_ITEM);                   break;
 		case KEY_PPAGE:
-		case 16:	/* C-p */
-			menu_driver(file.menu, REQ_SCR_UPAGE);
-			draw_info(ENTRY(file.menu), info.win);
-			wrefresh(info.win);
-			break;
-		case 'r':	/* reload marked */
-			revert_marked();
-			draw_info(ENTRY(file.menu), info.win);
-			wrefresh(info.win);
-			break;
-		case 's':	/* write file */
-			write_entry(ENTRY(file.menu));
-			draw_info(ENTRY(file.menu), info.win);
-			wrefresh(info.win);
-			break;
-		case 'u':	/* unmark all */
-			idx = item_index(current_item((const MENU *)file.menu));
-			menu_driver(file.menu, REQ_FIRST_ITEM);
-			for (d = 0; d < item_count(file.menu); d++, 
-				     menu_driver(file.menu, REQ_DOWN_ITEM)) {
-				if (ENTRY(file.menu)->mark) {
-					menu_driver(file.menu, REQ_TOGGLE_ITEM);
-					ENTRY(file.menu)->mark = 0;
-				}
-			}
-			nth_item(file.menu, idx);
-			break;
-		case 'w':	/* write marked */
-			write_marked();
-			draw_info(ENTRY(file.menu), info.win);
-			wrefresh(info.win);
-			break;
+		case 16:	kb_move(REQ_SCR_UPAGE);                 break;
+		case 'r':	kb_reload();                            break;
+		case 's':	kb_write();     			break;
+		case 'u':       kb_unmark();    			break;
+		case 'w':	kb_write_marked();			break;
 		}
 
 		if (state == INFO_MODE)
