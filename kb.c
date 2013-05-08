@@ -128,3 +128,167 @@ kb_edit(int *many)
         *many = 0;
         state = INFO_MODE;
 }
+
+void
+kb_regex1(int *regexp)
+{
+        *regexp = 1;
+        post_form(edit.form);
+        wrefresh(edit.win);
+        state = EDIT_MODE;
+}
+
+void
+kb_regex2(regex_t *reg, char *s)
+{	
+        int c;
+
+        if (regcomp(reg, s, REG_EXTENDED | REG_ICASE | REG_NOSUB) != 0)
+                return;
+        menu_driver(file.menu, REQ_FIRST_ITEM);
+
+        for (c = 0; c < item_count(file.menu); c++, 
+                     menu_driver(file.menu, REQ_DOWN_ITEM)) {
+                if (regexec(reg, make_regex_str(ENTRY(file.menu)->tagp), 
+                            0, NULL, 0) == 0) {
+                        ENTRY(file.menu)->mark = !ENTRY(file.menu)->mark;
+                        menu_driver(file.menu, REQ_TOGGLE_ITEM);
+                }
+        }
+        menu_driver(file.menu, REQ_FIRST_ITEM);        
+}
+
+void
+kb_toggle_all()
+{
+        int c;
+        int idx;
+
+        idx = item_index(current_item((const MENU *)file.menu));
+        menu_driver(file.menu, REQ_FIRST_ITEM);
+        for (c = 0; c < item_count(file.menu); c++, 
+                     menu_driver(file.menu, REQ_DOWN_ITEM)) {
+                ENTRY(file.menu)->mark = !ENTRY(file.menu)->mark;
+                menu_driver(file.menu, REQ_TOGGLE_ITEM);
+        }
+        nth_item(file.menu, idx);
+}
+
+void
+kb_clear()
+{
+        ITEM **items;
+
+        unpost_menu(file.menu);
+        
+        items = menu_items(file.menu);
+        clear_active();
+        set_menu_items(file.menu, NULL);
+        if (items != NULL) {
+                free_items(items);
+                free(items);
+        }
+        
+        post_menu(file.menu);
+        wrefresh(file.win);
+        state = DIR_MODE; 
+}
+
+void
+kb_remove()
+{
+        ITEM **items;
+        char *s;
+        int idx, c;
+
+        unpost_menu(file.menu);
+			
+        s = ENTRY(file.menu)->name;
+        idx = item_index(current_item((const MENU *)file.menu));
+        items = menu_items(file.menu);
+        remove_marked();
+        set_menu_items(file.menu, list_make_items());
+        if (items != NULL) {
+                free_items(items);
+                free(items);
+        }
+        
+        post_menu(file.menu);
+        for (c = 0; c < item_count(file.menu) && 
+                     s != ENTRY(file.menu)->name; c++) {
+                menu_driver(file.menu, REQ_DOWN_ITEM);
+        }
+        /* The selected item was one of the items deleted. */
+        if (c == item_count(file.menu))
+                nth_item(file.menu, idx);
+        wrefresh(file.win);
+}
+
+void
+kb_multi_edit(int *many)
+{
+        struct entry *p;
+        int flag;
+        
+        flag = 1;
+        LIST_FOREACH(p, &active, entries) {
+                if (p->mark)
+                        flag = 0;
+        }
+        if (flag)
+                return;
+        set_menu_items(info.menu, info_make_items(ENTRY(file.menu), 1));
+        post_menu(info.menu);
+        *many = 1;
+        state = INFO_MODE;
+}
+
+void
+kb_move(int c)
+{
+        menu_driver(file.menu, c);
+        draw_info(ENTRY(file.menu), info.win);
+        wrefresh(info.win);
+}
+
+void
+kb_reload()
+{
+        revert_marked();
+        draw_info(ENTRY(file.menu), info.win);
+        wrefresh(info.win);
+}
+
+void
+kb_write()
+{
+        write_entry(ENTRY(file.menu));
+        draw_info(ENTRY(file.menu), info.win);
+        wrefresh(info.win);
+}
+
+void
+kb_unmark()
+{
+        int idx, c;
+
+        idx = item_index(current_item((const MENU *)file.menu));
+
+        menu_driver(file.menu, REQ_FIRST_ITEM);
+        for (c = 0; c < item_count(file.menu); c++, 
+                     menu_driver(file.menu, REQ_DOWN_ITEM)) {
+                if (ENTRY(file.menu)->mark) {
+                        menu_driver(file.menu, REQ_TOGGLE_ITEM);
+                        ENTRY(file.menu)->mark = 0;
+                }
+        }
+        nth_item(file.menu, idx);
+}
+
+void
+kb_write_marked()
+{
+        write_marked();
+        draw_info(ENTRY(file.menu), info.win);
+        wrefresh(info.win);
+}
