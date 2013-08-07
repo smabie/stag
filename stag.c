@@ -39,7 +39,6 @@ main(int argc, char **argv)
 {
 	struct winsize w;
 	regex_t reg;
-	struct entry *p;
 	char *s;
 	int c, hidden, many, d, regexp, idx;
 	int metap;
@@ -48,7 +47,6 @@ main(int argc, char **argv)
 	metap = 0;
 	state = DIR_MODE;
 	info.menu = NULL;
-	p = NULL;
 
 	signal(SIGWINCH, resize);
 	(void)memset(wtfbuf, ' ', 1023);
