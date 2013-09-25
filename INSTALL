@@ -1,7 +1,3 @@
-Compile and install with:
-
-$ make
-
 if you want to compile stag with ncurses wide character support:
  
 $ make wide
