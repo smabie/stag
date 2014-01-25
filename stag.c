@@ -47,7 +47,7 @@ main(int argc, char **argv)
 	metap = 0;
 	state = DIR_MODE;
 	info.menu = NULL;
-
+        
 	signal(SIGWINCH, resize);
 	(void)memset(wtfbuf, ' ', 1023);
 	
@@ -385,7 +385,8 @@ init_screen()
 	raw();
 	noecho();
 	nonl();
-
+        curs_set(0);
+        
 	mvvline(1, COLS / 2, 0, LINES - INFO_LEN - 1);
 	mvhline(LINES - INFO_LEN, 0, 0, COLS);
 	mvprintw(0, COLS - sizeof(PROG_NAME) - strlen(hostname) - 1,
