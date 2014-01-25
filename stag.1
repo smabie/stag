@@ -39,6 +39,14 @@ current mode, a few keybindings are available with nearly identical semantics in
 and
 .Em info-mode :
 .Bl -tag -width xxxxxxxxx
+.It TAB
+Cycle through
+.Em directory-mode ,
+.Em file-mode ,
+and
+.Em info-mode .
+If no entries are marked, then skip
+.Em info-mode .
 .It n
 Move the
 .Em mark
@@ -226,3 +234,4 @@ Delete from the cursor to the end of the line.
 .Sh AUTHORS
 This program was created by Sturm Mabie
 .Mt ( sturm@cryptm.org ) .
+

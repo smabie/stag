@@ -137,146 +137,236 @@ resize:
 
 			goto resize;
 		}
-		if (state == DIR_MODE)
-		switch (c) {
-  		case ' ':       kb_add();                               break;
-                case 13:        kb_enter(hidden);                       break;
-                case 'h':       kb_hide(&hidden);                       break;
-		case KEY_DOWN:
-		case 'n':       menu_driver(dir.menu, REQ_DOWN_ITEM);   break;
-		case KEY_NPAGE:
-		case 14:        menu_driver(dir.menu, REQ_SCR_DPAGE);   break;
-		case KEY_RIGHT:
-		case 'o':       kb_file_mode();                      continue;
-		case KEY_UP:
-		case 'p':       menu_driver(dir.menu, REQ_UP_ITEM);     break;
-		case KEY_PPAGE:
-		case 16: 	menu_driver(dir.menu, REQ_SCR_UPAGE);	break;
-		}
-
-		if (state == FILE_MODE)
-		switch (c) {
-		case ' ':       kb_toggle();                    	break;
-		case 13:	kb_edit(&many);                      continue;
-		case '/':       kb_regex1(&regexp);      	     continue;
-                rjmp:           kb_regex2(&reg, s);                     break;
-		case 'a':       kb_toggle_all();                        break;
-		case 'c':	kb_clear();                          continue;
-		case 'd':	kb_remove();    			break;
-		case 'e':	kb_multi_edit(&many);                continue;
-		case KEY_LEFT:
-		case 'o':	state = DIR_MODE;                    continue;
-		case KEY_DOWN:
-		case 'n':       kb_move(REQ_DOWN_ITEM);                 break;
-		case KEY_NPAGE:
-		case 14:	kb_move(REQ_SCR_DPAGE);                 break;
-		case KEY_UP:
-		case 'p':       kb_move(REQ_UP_ITEM);                   break;
-		case KEY_PPAGE:
-		case 16:	kb_move(REQ_SCR_UPAGE);                 break;
-		case 'r':	kb_reload();                            break;
-		case 's':	kb_write();     			break;
-		case 'u':       kb_unmark();    			break;
-		case 'w':	kb_write_marked();			break;
-		}
-
-		if (state == INFO_MODE)
-		switch (c) {
-		case 13:        kb_edit_field();        	     continue;
-		case KEY_RIGHT:
-		case 'o':	kb_other();     		     continue;
-		case KEY_LEFT:  kb_left();      		     continue;
-		case KEY_DOWN:
-		case 'n':       menu_driver(info.menu, REQ_DOWN_ITEM);	break;
-		case KEY_UP:
-		case 'p':	menu_driver(info.menu, REQ_UP_ITEM);	break;
-		}
-
+		if (state == DIR_MODE) {
+                        switch (c) {
+                        case ' ':
+                                kb_add();
+                                break;
+                        case 13:
+                                kb_enter(hidden);
+                                break;
+                        case 'h':
+                                kb_hide(&hidden);
+                                break;
+                        case KEY_DOWN:
+                        case 'n':
+                                menu_driver(dir.menu, REQ_DOWN_ITEM);
+                                break;
+                        case KEY_NPAGE:
+                        case 14:
+                                menu_driver(dir.menu, REQ_SCR_DPAGE);
+                                break;
+                        case 9:
+                        case KEY_RIGHT:
+                        case 'o':
+                                kb_file_mode();
+                                continue;
+                        case KEY_UP:
+                        case 'p':
+                                menu_driver(dir.menu, REQ_UP_ITEM);
+                                break;
+                        case KEY_PPAGE:
+                        case 16:
+                                menu_driver(dir.menu, REQ_SCR_UPAGE);
+                                break;
+                        }
+                }
+                
+		if (state == FILE_MODE) {
+                        switch (c) {
+                        case 9:
+                                if (any_marked())
+                                        kb_multi_edit(&many);
+                                else
+                                        state = DIR_MODE;
+                                continue;
+                        case ' ':
+                                kb_toggle();
+                                break;
+                        case 13:
+                                kb_edit(&many);
+                                continue;
+                        case '/':
+                                kb_regex1(&regexp);
+                                continue;
+                        rjmp:
+                                kb_regex2(&reg, s);
+                                break;
+                        case 'a':
+                                kb_toggle_all();
+                                break;
+                        case 'c':
+                                kb_clear();
+                                continue;
+                        case 'd':
+                                kb_remove();
+                                break;
+                        case 'e':
+                                kb_multi_edit(&many);
+                                continue;
+                        case KEY_LEFT:
+                        case 'o':
+                                state = DIR_MODE;
+                                continue;
+                        case KEY_DOWN:
+                        case 'n':
+                                kb_move(REQ_DOWN_ITEM);
+                                break;
+                        case KEY_NPAGE:
+                        case 14:
+                                kb_move(REQ_SCR_DPAGE);
+                                break;
+                        case KEY_UP:
+                        case 'p':
+                                kb_move(REQ_UP_ITEM);
+                                break;
+                        case KEY_PPAGE:
+                        case 16:
+                                kb_move(REQ_SCR_UPAGE);
+                                break;
+                        case 'r':
+                                kb_reload();
+                                break;
+                        case 's':
+                                kb_write();
+                                break;
+                        case 'u':
+                                kb_unmark();
+                                break;
+                        case 'w':
+                                kb_write_marked();
+                                break;
+                        }
+                }
+                
+		if (state == INFO_MODE) {
+                        switch (c) {
+                        case 9:
+                                kb_other();
+                                state = DIR_MODE;
+                                continue;
+                        case 13:
+                                kb_edit_field();
+                                continue;
+                        case KEY_RIGHT:
+                        case 'o':
+                                kb_other();
+                                continue;
+                        case KEY_LEFT:
+                                kb_left();
+                                continue;
+                        case KEY_DOWN:
+                        case 'n':
+                                menu_driver(info.menu, REQ_DOWN_ITEM);
+                                break;
+                        case KEY_UP:
+                        case 'p':
+                                menu_driver(info.menu, REQ_UP_ITEM);
+                                break;
+                        }
+                }
+                
+		if (state == EDIT_MODE) {
+                        switch (c) {
+                        case 13:	/* LF */
+                                form_driver(edit.form, REQ_NEXT_FIELD);
+                                
+                                s = str_cleanup(field_buffer(edit.field[0], 0));
+                                
+                                set_field_buffer(edit.field[0], 0, "");
+                                
+                                if (regexp) {
+                                        regexp = 0;
+                                        state = FILE_MODE;
+                                        goto rjmp;
+                                }
+                                /* 
+                                 * This whole scheme is pretty fucking stupid 
+                                 * and should probably be fixed to use function 
+                                 * pointers.
+                                 */
+                                switch (item_index(current_item(info.menu))) {
+                                case 0:
+                                        CHOOSE(track, atoi(s));
+                                        break;
+                                case 1:
+                                        CHOOSE(title, s);
+                                        break;
+                                case 2:
+                                        CHOOSE(artist, s);
+                                        break;
+                                case 3:
+                                        CHOOSE(album, s);
+                                        break;
+                                case 4:
+                                        CHOOSE(genre, s);
+                                        break;
+                                case 5:
+                                        CHOOSE(year, atoi(s));
+                                        break;
+                                case 6:	CHOOSE(comment, s);
+                                        break;
+                                }
+                                idx = item_index(current_item
+                                                 ((const MENU *)info.menu));
+                                
+                                unpost_menu(info.menu);
+                                set_menu_items(info.menu,
+                                               info_make_items(ENTRY(file.menu),
+                                                               many));
+                                post_menu(info.menu);
+                                nth_item(info.menu, idx);
+                                
+                                wrefresh(edit.win);
+                                state = INFO_MODE;
+                                continue;
+                        case KEY_BACKSPACE:	/* backspace */
+                                form_driver(edit.form, REQ_DEL_PREV);
+                                break;
+                        case 1:		/* C-a */
+                                form_driver(edit.form, REQ_BEG_FIELD);
+                                break;
+                        case KEY_LEFT:
+                        case 2:		/* C-b */
+                                form_driver(edit.form, REQ_PREV_CHAR);
+                                break;
+                        case KEY_DC:
+                        case 4:		/* C-d */
+                                form_driver(edit.form, REQ_DEL_CHAR);
+                                break;
+                        case 5:		/* C-e */
+                                form_driver(edit.form, REQ_END_FIELD);
+                                break;
+                        case KEY_RIGHT:
+                        case 6:		/* C-f */
+                                form_driver(edit.form, REQ_NEXT_CHAR);
+                                break;
+                        case 11:	/* C-k */
+                                form_driver(edit.form, REQ_CLR_EOF);
+                                break;
+                        case 27:	/* meta key */
+                                metap = 1;
+                                break;
+                        case 'b':	/* M-b */
+                                if (metap) {
+                                        metap = 0;
+                                        form_driver(edit.form, REQ_PREV_WORD);
+                                        break;
+                                }
+                        case 'f':	/* M-f */
+                                if (metap) {
+                                        metap = 0;
+                                        form_driver(edit.form, REQ_NEXT_WORD);
+                                        break;
+                                }
+                        default:
+                                form_driver(edit.form, c);
+                                break;
+                        }
+                }
 		if (state == EDIT_MODE) 
-		switch (c) {
-		case 13:	/* LF */
-			form_driver(edit.form, REQ_NEXT_FIELD);
-
-			s = str_cleanup(field_buffer(edit.field[0], 0));
-
-			set_field_buffer(edit.field[0], 0, "");
-
-			if (regexp) {
-				regexp = 0;
-				state = FILE_MODE;
-				goto rjmp;
-			}
-			/* 
-			 * This whole scheme is pretty fucking stupid and should
-			 * probably be fixed to use function pointers.
-			 */
-			switch (item_index(current_item(info.menu))) {
-			case 0:	CHOOSE(track, atoi(s));		break;
-			case 1:	CHOOSE(title, s);		break;
-			case 2:	CHOOSE(artist, s);		break;
-			case 3: CHOOSE(album, s);		break;
-			case 4:	CHOOSE(genre, s);		break;
-			case 5:	CHOOSE(year, atoi(s));		break;
-			case 6:	CHOOSE(comment, s);		break;
-			}
-			idx = item_index(current_item((const MENU *)info.menu));
-
-			unpost_menu(info.menu);
-			set_menu_items(info.menu,
-				       info_make_items(ENTRY(file.menu), many));
-			post_menu(info.menu);
-			nth_item(info.menu, idx);
-
 			wrefresh(edit.win);
-			state = INFO_MODE;
-			continue;
-		case KEY_BACKSPACE:	/* backspace */
-			form_driver(edit.form, REQ_DEL_PREV);
-			break;
-		case 1:		/* C-a */
-			form_driver(edit.form, REQ_BEG_FIELD);
-			break;
-		case KEY_LEFT:
-		case 2:		/* C-b */
-			form_driver(edit.form, REQ_PREV_CHAR);
-			break;
-                case KEY_DC:
-		case 4:		/* C-d */
-			form_driver(edit.form, REQ_DEL_CHAR);
-			break;
-		case 5:		/* C-e */
-			form_driver(edit.form, REQ_END_FIELD);
-			break;
-		case KEY_RIGHT:
-		case 6:		/* C-f */
-			form_driver(edit.form, REQ_NEXT_CHAR);
-			break;
-		case 11:	/* C-k */
-			form_driver(edit.form, REQ_CLR_EOF);
-			break;
-		case 27:	/* meta key */
-			metap = 1;
-			break;
-		case 'b':	/* M-b */
-			if (metap) {
-				metap = 0;
-				form_driver(edit.form, REQ_PREV_WORD);
-				break;
-			}
-		case 'f':	/* M-f */
-			if (metap) {
-				metap = 0;
-				form_driver(edit.form, REQ_NEXT_WORD);
-				break;
-			}
-		default:
-			form_driver(edit.form, c);
-			break;
-		}
-
-		if (state == EDIT_MODE) 
-			wrefresh(edit.win);
-	}	
+	}
 
         destroy_screen();
 

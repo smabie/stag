@@ -266,6 +266,18 @@ nth_item(MENU *menu, int n)
 		menu_driver(menu, REQ_DOWN_ITEM);
 }
 
+int
+any_marked(void)
+{
+        struct entry *p;
+
+        LIST_FOREACH(p, &active, entries) {
+                if (p->mark)
+                        return 1;
+        }
+        return 0;
+}
+
 void
 free_items(ITEM **items)
 {
