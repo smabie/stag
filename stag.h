@@ -132,6 +132,7 @@ void resize(int);
 void stag_warnx(const char *, ...);
 void stag_warn(const char *, ...);
 
+int any_marked();
 ITEM **path_make_items(const char *, int);
 ITEM **list_make_items(void);
 ITEM **info_make_items(const struct entry *, int);
