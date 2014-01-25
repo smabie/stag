@@ -121,6 +121,7 @@ MENU *make_menu(ITEM **, WINDOW *);
 void init_screen();
 void destroy_screen();
 
+int any_marked();
 void nth_item(MENU *, int);
 unsigned int all_equal_int(unsigned int (*)(const TagLib_Tag *));
 char *all_equal_str(char *(*)(const TagLib_Tag *));
@@ -132,7 +133,6 @@ void resize(int);
 void stag_warnx(const char *, ...);
 void stag_warn(const char *, ...);
 
-int any_marked();
 ITEM **path_make_items(const char *, int);
 ITEM **list_make_items(void);
 ITEM **info_make_items(const struct entry *, int);
