@@ -292,11 +292,6 @@ clean_xstrdup(char *s)
         if ((ret = strdup(s)) == NULL)
                 err(1, "strdup: ");
 
-        for (s = ret; *s != '\0'; s++) {
-                if (!isprint(*s))
-                        *s = ' ';
-        }
-
         return ret;
 }
 

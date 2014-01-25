@@ -2,6 +2,7 @@ stag is a C curses based mp3/ogg/flac tagging application.
 
 Features:
     * Support for MP3, OGG, and FLAC files
+    * Full utf8 support
     * Support for simultaneous file editing
     * File selection by regex
     * Very low memory footprint (~2MB unless editing many files)
