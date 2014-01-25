@@ -9,5 +9,3 @@ $ make all
 $ cp stag /path/to/bin/
 $ cp stag.1 /path/to/man/
 
-If you're using a braindead man formatter like groff, the man page
-might be fucked up. stag.0 is included for this reason.
