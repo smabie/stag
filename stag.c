@@ -240,6 +240,7 @@ resize:
 		case 2:		/* C-b */
 			form_driver(edit.form, REQ_PREV_CHAR);
 			break;
+                case KEY_DC:
 		case 4:		/* C-d */
 			form_driver(edit.form, REQ_DEL_CHAR);
 			break;
