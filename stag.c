@@ -230,7 +230,7 @@ resize:
 			wrefresh(edit.win);
 			state = INFO_MODE;
 			continue;
-		case 127:	/* backspace */
+		case KEY_BACKSPACE:	/* backspace */
 			form_driver(edit.form, REQ_DEL_PREV);
 			break;
 		case 1:		/* C-a */
