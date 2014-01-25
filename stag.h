@@ -121,6 +121,7 @@ MENU *make_menu(ITEM **, WINDOW *);
 void init_screen();
 void destroy_screen();
 
+void print_state();
 int any_marked();
 void nth_item(MENU *, int);
 unsigned int all_equal_int(unsigned int (*)(const TagLib_Tag *));

@@ -137,6 +137,7 @@ resize:
 
 			goto resize;
 		}
+                print_state();
 		if (state == DIR_MODE) {
                         switch (c) {
                         case ' ':
@@ -389,6 +390,7 @@ init_screen()
 	mvhline(LINES - INFO_LEN, 0, 0, COLS);
 	mvprintw(0, COLS - sizeof(PROG_NAME) - strlen(hostname) - 1,
 		 "%s@%s", PROG_NAME, hostname);
+        
 	mvprintw(LINES - INFO_LEN + 1, 0, "track:\t ");
 	mvprintw(LINES - INFO_LEN + 2, 0, "title:\t ");
 	mvprintw(LINES - INFO_LEN + 3, 0, "artist:\t ");
@@ -485,6 +487,29 @@ make_regex_str(TagLib_Tag *p)
 	return buf;
 }
 
+void
+print_state()
+{
+        char *s;
+        
+        mvprintw(0, 0, "               ");
+        switch (state) {
+        case DIR_MODE:
+                s = "directory-mode";
+                break;
+        case FILE_MODE:
+                s = "file-mode";
+                break;
+        case INFO_MODE:
+                s = "info-mode";
+                break;
+        case EDIT_MODE:
+                s = "edit-mode";
+                break;
+        }
+        mvprintw(0, 0, " %s", s);
+        refresh();
+}
 void
 resize(int s)
 {
