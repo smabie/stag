@@ -137,7 +137,7 @@ resize:
 
 			goto resize;
 		}
-                print_state();
+                
 		if (state == DIR_MODE) {
                         switch (c) {
                         case ' ':
@@ -161,6 +161,7 @@ resize:
                         case KEY_RIGHT:
                         case 'o':
                                 kb_file_mode();
+                                print_state();
                                 continue;
                         case KEY_UP:
                         case 'p':
@@ -180,12 +181,14 @@ resize:
                                         kb_multi_edit(&many);
                                 else
                                         state = DIR_MODE;
+                                print_state();
                                 continue;
                         case ' ':
                                 kb_toggle();
                                 break;
                         case 13:
                                 kb_edit(&many);
+                                print_state();
                                 continue;
                         case '/':
                                 kb_regex1(&regexp);
@@ -208,6 +211,7 @@ resize:
                         case KEY_LEFT:
                         case 'o':
                                 state = DIR_MODE;
+                                print_state();
                                 continue;
                         case KEY_DOWN:
                         case 'n':
@@ -245,13 +249,16 @@ resize:
                         case 9:
                                 kb_other();
                                 state = DIR_MODE;
+                                print_state();
                                 continue;
                         case 13:
                                 kb_edit_field();
+                                print_state();
                                 continue;
                         case KEY_RIGHT:
                         case 'o':
                                 kb_other();
+                                print_state();
                                 continue;
                         case KEY_LEFT:
                                 kb_left();
@@ -279,6 +286,7 @@ resize:
                                 if (regexp) {
                                         regexp = 0;
                                         state = FILE_MODE;
+                                        print_state();
                                         goto rjmp;
                                 }
                                 /* 
@@ -320,6 +328,7 @@ resize:
                                 
                                 wrefresh(edit.win);
                                 state = INFO_MODE;
+                                print_state();
                                 continue;
                         case KEY_BACKSPACE:	/* backspace */
                                 form_driver(edit.form, REQ_DEL_PREV);
@@ -390,7 +399,7 @@ init_screen()
 	mvhline(LINES - INFO_LEN, 0, 0, COLS);
 	mvprintw(0, COLS - sizeof(PROG_NAME) - strlen(hostname) - 1,
 		 "%s@%s", PROG_NAME, hostname);
-        
+        print_state();
 	mvprintw(LINES - INFO_LEN + 1, 0, "track:\t ");
 	mvprintw(LINES - INFO_LEN + 2, 0, "title:\t ");
 	mvprintw(LINES - INFO_LEN + 3, 0, "artist:\t ");
