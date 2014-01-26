@@ -385,8 +385,7 @@ init_screen()
 	raw();
 	noecho();
 	nonl();
-        curs_set(0);
-        
+                
 	mvvline(1, COLS / 2, 0, LINES - INFO_LEN - 1);
 	mvhline(LINES - INFO_LEN, 0, 0, COLS);
 	mvprintw(0, COLS - sizeof(PROG_NAME) - strlen(hostname) - 1,
