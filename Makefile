@@ -14,6 +14,6 @@ CPPFLAGS+=-I/usr/local/include `taglib-config --cflags`
 LDFLAGS+=-L/usr/local/lib `taglib-config --libs` -ltag_c -lstdc++ 
 
 wide:
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(CURSESW) $(FILES) -o $(PROG)
+	$(CC) $(FILES) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(CURSESW) -o $(PROG)
 all:
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(CURSES) $(FILES) -o $(PROG)
+	$(CC) $(FILES) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $(CURSES) -o $(PROG)
